@@ -7,9 +7,8 @@
 
 using namespace std;
 
-int main()
+int File_test()
 {
-  cout << "testing the File class" << endl;
   eda::File test;
 
   test.set(0, 0x20);
@@ -21,6 +20,6 @@ int main()
   assert(test[10]==0x104);
   assert(test[1]==0x20);
 
-  cout << "all tests pass" << endl;
+  cout << test[100] << " pass" << endl;
 
 }

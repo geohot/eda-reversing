@@ -1,13 +1,14 @@
 // StatelessChangelist.h -- Apr 12, 2009
 //    by geohot
 
-#ifndef STATELESSCHANGELIST_H_
-#define STATELESSCHANGELIST_H_
+#ifndef EDA_STATELESSCHANGELIST_H_
+#define EDA_STATELESSCHANGELIST_H_
 //prototypes for:
 //	StatelessChangelist
 //	StatelessData
 
 #include "../edaMacros.h"
+#include "Changelist.h"
 #include <vector>
 namespace eda {
 
@@ -23,13 +24,15 @@ namespace eda {
 //target is memory[register+-register], memory[register+-immed]
 
 class StatelessData;
+class Changelist;
 
 class StatelessChangelist
 {
 public:
-  Changelist resolve(int changelistNumber, const RegisterFile *r, const Memory *m);
+  Changelist resolve(int changelistNumber, RegisterFile *r, Memory *m);
   //generates a changelist with state using the register file and memory
   //add both memory moving things and ALU things
+  //should be const
   void addChange(StatelessData target, StatelessData source);
 private:
   std::vector<std::pair<StatelessData, StatelessData> > mInternalChangelist;
@@ -43,6 +46,8 @@ private:
 #define OPERATION_ADD 4
 #define OPERATION_ORR 5
 #define OPERATION_BIC 6
+#define OPERATION_LSL 7
+#define OPERATION_LSR 8
 
 //high operations, evaluateOperation doesn't do these
 #define OPERATION_DEREF 256
@@ -65,26 +70,29 @@ private:
   int mDataType;
 };
 
+class StatelessData;
+
 //StatelessData is just a storage class, actually not, have it walk
 class StatelessData
 {
 public:
-  StatelessData(u32);  //immediate data
+  StatelessData();
+  StatelessData(Data);  //immediate data
   StatelessData(int);   //immediate register
-  StatelessData(int, int, StatelessData);
-  StatelessData(int, StatelessData); //like dereference
+  StatelessData(int, int, StatelessData *);
+  StatelessData(int, StatelessData *); //like dereference
 
-  Data resolve(int changelistNumber, const RegisterFile *r, const Memory *m);
-  Location resolveLocation(int changelistNumber, const RegisterFile *r, const Memory *m);
+  Data resolve(int changelistNumber, RegisterFile *r, Memory *m);
+  Location resolveLocation(int changelistNumber, RegisterFile *r, Memory *m);
 private:
   Data evaluateOperation(Data lhs, Data rhs, int operation);
   int mDataType;
   int mRegister;
   int mOperation;
   Data mData;
-  StatelessData mOperand;
+  StatelessData *mOperand;
 };
 
 }
 
-#endif /* STATELESSCHANGELIST_H_ */
+#endif /* EDA_STATELESSCHANGELIST_H_ */

@@ -5,12 +5,19 @@
 
 namespace eda {
 
-void Changelist::commit(int changelistNumber, RegisterFile *r, Memory *m)
+Changelist::Changelist(int changelistNumber)
 {
-  std::vector<std::pair<Location, Data> >::iterator walk=mInternalChangeList.begin();
-  while(walk!=mInternalChangeList.end())
+  mChangelistNumber=changelistNumber;
+}
+
+void Changelist::commit(RegisterFile *r, Memory *m)
+{
+  std::vector<std::pair<Location, Data> >::iterator walk=mInternalChangelist.begin();
+  while(walk!=mInternalChangelist.end())
   {
-    walk->first.assign(changelistNumber, walk->second, r, m);
+    //assign the Data to the Location
+    walk->first.assign(mChangelistNumber, walk->second, r, m);
+    ++walk;
   }
 }
 

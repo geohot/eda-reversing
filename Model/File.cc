@@ -11,7 +11,7 @@ void File::set(int changelistNumber, Data data)
 }
 
 //return biggest cl_num entry <= passed cl_num
-u32& File::operator[] (int cl_num)
+Data& File::operator[] (int cl_num)
 {
   return (--mStore.upper_bound(cl_num))->second;
 }

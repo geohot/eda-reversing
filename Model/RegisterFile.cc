@@ -10,7 +10,7 @@ RegisterFile::RegisterFile(int size)
   mRegisterStore.resize(size);
 }
 
-File& operator[](int registerNumber)
+File& RegisterFile::operator[](int registerNumber)
 {
   return mRegisterStore[registerNumber];
 }

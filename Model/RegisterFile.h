@@ -1,9 +1,10 @@
 // RegisterFile.h -- Apr 13, 2009
 //    by geohot
 
-#ifndef REGISTERFILE_H_
-#define REGISTERFILE_H_
+#ifndef EDA_REGISTERFILE_H_
+#define EDA_REGISTERFILE_H_
 
+#include <vector>
 #include "File.h"
 
 namespace eda {
@@ -19,4 +20,4 @@ private:
 
 }
 
-#endif /* REGISTERFILE_H_ */
+#endif /* EDA_REGISTERFILE_H_ */
