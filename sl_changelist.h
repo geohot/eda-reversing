@@ -17,10 +17,10 @@ using namespace std;
 
 //target is memory[register+-register], memory[register+-immed]
 
-class sl_changelist()
+class StatelessChangelist()
 {
 public:
-  changelist apply(const register_file *r, const database *m);
+  Changelist apply(const register_file *r, const database *m);
   //generates a changelist with state using the register file and memory
   //add both memory moving things and ALU things
   void add_entry(sl_data target, stateless_data 
@@ -34,12 +34,12 @@ private:
 #define OPERATION_SUB 2
 #define OPERATION_XOR 3
 
-class sl_data()
+class StatelessData()
 {
 public:
-  sl_data(u32 data);  //immediate data
-  sl_data(int reg, int operation, stateless_data value);
-  sl_data(int operation, stateless_data value); //like dereference
+  StatelessData(u32 data);  //immediate data
+  StatelessData(int reg, int operation, StatelessData value);
+  StatelessData(int operation, StatelessData value); //like dereference
 }
 
 #endif

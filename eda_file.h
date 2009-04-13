@@ -5,13 +5,17 @@
 
 #define u32 unsigned int
 
-class eda::file
+namespace eda {
+
+class File
 {
 public:
-  u32& operator[](int cl_num);
-  void set(int cl_num, u32 data);
+  u32& operator[](int changelistNumber);
+  void set(int changelistNumber, u32 data);
 private:
-  map<int, u32> db;
+  std::map<int, u32> mStore;
+};
+
 }
 
 #endif
