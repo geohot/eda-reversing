@@ -5,7 +5,7 @@
 
 using namespace eda;
 
-void File::set(int changelistNumber, u32 data)
+void File::set(int changelistNumber, Data data)
 {
   mStore.insert(std::make_pair(changelistNumber, data));
 }

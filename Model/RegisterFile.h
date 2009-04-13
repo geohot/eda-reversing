@@ -11,9 +11,10 @@ namespace eda {
 class RegisterFile
 {
 public:
-  File& operator[](u32 RegisterNumber);
+  RegisterFile(int size);
+  File& operator[](int RegisterNumber);
 private:
-  vector<File> mRegisterStore;
+  std::vector<File> mRegisterStore;
 };
 
 }

@@ -4,9 +4,8 @@
 #ifndef FILE_H_
 #define FILE_H_
 
+#include "../edaMacros.h"
 #include <map>
-
-#define u32 unsigned int
 
 namespace eda {
 
@@ -14,9 +13,9 @@ class File
 {
 public:
   u32& operator[](int changelistNumber);
-  void set(int changelistNumber, u32 data);
+  void set(int changelistNumber, Data data);
 private:
-  std::map<int, u32> mStore;
+  std::map<int, Data> mStore;
 };
 
 }

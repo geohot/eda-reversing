@@ -2,3 +2,15 @@
 //    by geohot
 
 #include "RegisterFile.h"
+
+using namespace eda;
+
+RegisterFile::RegisterFile(int size)
+{
+  mRegisterStore.resize(size);
+}
+
+File& operator[](int registerNumber)
+{
+  return mRegisterStore[registerNumber];
+}

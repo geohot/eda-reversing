@@ -7,6 +7,7 @@
 //	StatelessChangelist
 //	StatelessData
 
+#include "../edaMacros.h"
 #include <vector>
 namespace eda {
 
@@ -16,6 +17,9 @@ namespace eda {
 
 //every entry has finite characteristics
 
+//every ARM assembly instruction is of the following form
+  //[register+-Data]
+
 //target is memory[register+-register], memory[register+-immed]
 
 class StatelessData;
@@ -23,7 +27,7 @@ class StatelessData;
 class StatelessChangelist
 {
 public:
-  Changelist apply(const RegisterFile *r, const Memory *m);
+  Changelist resolve(int changelistNumber, const RegisterFile *r, const Memory *m);
   //generates a changelist with state using the register file and memory
   //add both memory moving things and ALU things
   void addChange(StatelessData target, StatelessData source);
@@ -40,15 +44,28 @@ private:
 #define OPERATION_ORR 5
 #define OPERATION_BIC 6
 
-#define OPERATION_DEREF 10
+//high operations, evaluateOperation doesn't do these
+#define OPERATION_DEREF 256
 
 #define DATATYPE_CONST 1
 #define DATATYPE_REG 2
-#define DATATYPE_OPER 3
-#define DATATYPE_REGOPER 4
+#define DATATYPE_OPER 4
 
 
-//StatelessData is just a storage class
+//Location is either a register or memory for now
+
+class Location
+{
+public:
+  Location(Data);       //Data is a memory address
+  Location(int);        //int is a register
+  void assign(int changelistNumber, Data value, RegisterFile *r, Memory *m);
+private:
+  Data mStore;
+  int mDataType;
+};
+
+//StatelessData is just a storage class, actually not, have it walk
 class StatelessData
 {
 public:
@@ -56,14 +73,18 @@ public:
   StatelessData(int);   //immediate register
   StatelessData(int, int, StatelessData);
   StatelessData(int, StatelessData); //like dereference
+
+  Data resolve(int changelistNumber, const RegisterFile *r, const Memory *m);
+  Location resolveLocation(int changelistNumber, const RegisterFile *r, const Memory *m);
 private:
-  u32 mDataType;
-  u32 mRegister;
-  u32 mOperation;
-  u32 mData;
+  Data evaluateOperation(Data lhs, Data rhs, int operation);
+  int mDataType;
+  int mRegister;
+  int mOperation;
+  Data mData;
   StatelessData mOperand;
-}
+};
 
 }
 
-#endif /*S TATELESSCHANGELIST_H_ */
+#endif /* STATELESSCHANGELIST_H_ */
