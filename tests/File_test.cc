@@ -1,6 +1,9 @@
+// File_test.cc -- Apr 12, 2009
+//    by geohot
+
 #include <iostream>
 #include <cassert>
-#include "../eda_file.h"
+#include "../Model/File.h"
 
 using namespace std;
 
@@ -19,5 +22,5 @@ int main()
   assert(test[1]==0x20);
 
   cout << "all tests pass" << endl;
-  
+
 }

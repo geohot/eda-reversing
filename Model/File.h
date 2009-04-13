@@ -1,5 +1,8 @@
-#ifndef __EDA_FILE_H
-#define __EDA_FILE_H
+// File.h -- Apr 12, 2009
+//    by geohot
+
+#ifndef FILE_H_
+#define FILE_H_
 
 #include <map>
 
@@ -18,4 +21,4 @@ private:
 
 }
 
-#endif
+#endif /* FILE_H_ */
