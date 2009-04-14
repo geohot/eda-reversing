@@ -4,6 +4,9 @@
 #ifndef EDA_TEMPLATEARM_H_
 #define EDA_TEMPLATEARM_H_
 
+#include <string>
+#include "../../Model/ParsedInstruction.h"
+
 typedef union
 {
   struct          //Misc instructions
@@ -195,10 +198,15 @@ typedef union
   Data opcode;
 } templateInstructionARM;
 
-const char conditionsARM[16][3]={"EQ","NE","HS","LO","MI","PL","VS","VC","HI","LS","GE","LT","GT","LE","",""};
-const char registerARM[18][5]={"R0","R1","R2","R3","R4","R5","R6","R7","R8","R9","R10","R11","R12","SP","LR","PC","CPSR","SPSR"};
-const char opcodesARM[16][4]={"AND","EOR","SUB","RSB","ADD","ADC","SBC","RSC","TST","TEQ","CMP","CMN","ORR","MOV","BIC","MVN"};
-const char shiftsARM[4][4]={"LSL","LSR","ASR","ROR"};
+#define conditionsARM(x) std::make_pair((std::string)conditionsARM_s[x], DT_CONDITION)
+#define registersARM(x) std::make_pair((std::string)registersARM_s[x], DT_REGISTER)
+#define opcodesARM(x) std::make_pair((std::string)opcodesARM_s[x], DT_OPCODE)
+#define shiftsARM(x) std::make_pair((std::string)shiftsARM_s[x], DT_SUBOPCODE)
+
+const char conditionsARM_s[16][3]={"EQ","NE","HS","LO","MI","PL","VS","VC","HI","LS","GE","LT","GT","LE","",""};
+const char registersARM_s[18][5]={"R0","R1","R2","R3","R4","R5","R6","R7","R8","R9","R10","R11","R12","SP","LR","PC","CPSR","SPSR"};
+const char opcodesARM_s[16][4]={"AND","EOR","SUB","RSB","ADD","ADC","SBC","RSC","TST","TEQ","CMP","CMN","ORR","MOV","BIC","MVN"};
+const char shiftsARM_s[4][4]={"LSL","LSR","ASR","ROR"};
 
 //execution modes
 #define M_USER 0x10
@@ -295,33 +303,7 @@ const char encodingsARM[15][0x10]={
 #define REG_CPSR 16
 #define REG_SPSR 17
 
-int getEncodingARM(Data opcode)
-{
-  if((opcode&0x0E000090)==0x00000090) return ARM_MELS;
 
-  if((opcode&0x0F900000)==0x01000000) return ARM_MI;
-
-  if((opcode&0x0E000010)==0x00000000) return ARM_DPIS;
-  if((opcode&0x0E000090)==0x00000010) return ARM_DPRS;
-
-  if((opcode&0x0FB00000)==0x03200000) return ARM_MISR;
-  if((opcode&0x0E000000)==0x02000000) return ARM_DPI;
-
-  if((opcode&0x0E000000)==0x04000000) return ARM_LSIO;
-  if((opcode&0x0E000010)==0x06000000) return ARM_LSRO;
-
-  if((opcode&0x0E000000)==0x08000000) return ARM_LSM;
-
-  if((opcode&0x0E000000)==0x0A000000) return ARM_BBL;
-
-  if((opcode&0x0E000000)==0x0C000000) return ARM_CLS;
-  if((opcode&0x0F000010)==0x0E000000) return ARM_CDP;
-  if((opcode&0x0F000010)==0x0E000010) return ARM_CRT;
-
-  if((opcode&0x0F000000)==0x0F000000) return ARM_SWI;
-
-  return ARM_UNKNOWN;
-}
 
 
 #endif /* EDA_TEMPLATEARM_H_ */

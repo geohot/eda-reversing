@@ -7,7 +7,7 @@
 #include "../Model/RegisterFile.h"
 #include "../Model/Memory.h"
 
-#include "../edaMacros.h"
+#include "../include/macros.h"
 #include "StatelessChangelist.h"
 
 namespace eda {

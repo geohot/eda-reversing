@@ -7,7 +7,7 @@
 //	StatelessChangelist
 //	StatelessData
 
-#include "../edaMacros.h"
+#include "../include/macros.h"
 #include "Changelist.h"
 #include <vector>
 namespace eda {
@@ -34,23 +34,37 @@ public:
   //add both memory moving things and ALU things
   //should be const
   void addChange(StatelessData target, StatelessData source);
+  void debugPrint();
 private:
   std::vector<std::pair<StatelessData, StatelessData> > mInternalChangelist;
 //some rep
 };
 
-#define OPERATION_NONE 0
-#define OPERATION_AND 1
-#define OPERATION_XOR 2
+//block 1
+#define OPERATION_AND 0
+#define OPERATION_XOR 1
+#define OPERATION_RSB 2
 #define OPERATION_SUB 3
 #define OPERATION_ADD 4
+
+//odd
 #define OPERATION_ORR 5
 #define OPERATION_BIC 6
-#define OPERATION_LSL 7
-#define OPERATION_LSR 8
 
+//block 2
+#define OPERATION_LSL 8
+#define OPERATION_LSR 9
+#define OPERATION_ASR 10
+#define OPERATION_ROR 11
+
+const char operations_s[][4]={
+    "&","^","`-","-","+",
+    "|","~&","",
+    "<<",">>",">>>",">/>"
+};
 //high operations, evaluateOperation doesn't do these
 #define OPERATION_DEREF 256
+#define OPERATION_NONE 257
 
 #define DATATYPE_CONST 1
 #define DATATYPE_REG 2
@@ -81,7 +95,7 @@ public:
   StatelessData(int);   //immediate register
   StatelessData(int, int, StatelessData *);
   StatelessData(int, StatelessData *); //like dereference
-
+  void debugPrint();
   Data resolve(int changelistNumber, RegisterFile *r, Memory *m);
   Location resolveLocation(int changelistNumber, RegisterFile *r, Memory *m);
 private:

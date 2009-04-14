@@ -7,6 +7,7 @@
 #include "StatelessChangelist.h"
 
 #include <vector>
+#include <iostream>
 
 using namespace eda;
 
@@ -30,6 +31,19 @@ Changelist StatelessChangelist::resolve(int changelistNumber, RegisterFile *r, M
   return ret;
 }
 
+void StatelessChangelist::debugPrint()
+{
+  std::vector<std::pair<StatelessData,StatelessData> >::iterator walk=mInternalChangelist.begin();
+  while(walk!=mInternalChangelist.end())
+  {
+    walk->first.debugPrint();
+    std::cout << " <- ";
+    walk->second.debugPrint();
+    std::cout << std::endl;
+    ++walk;
+  }
+}
+
 //*******************************StatelessData Class Methods*******************************
 
 StatelessData::StatelessData()
@@ -49,6 +63,29 @@ StatelessData::StatelessData(int reg)
 {
   mRegister=reg;
   mDataType=DATATYPE_REG;
+}
+
+void StatelessData::debugPrint()
+{
+  if(mDataType==DATATYPE_CONST)
+  {
+    std::cout << "#" << std::hex << mData;
+  }
+  else if(mDataType==DATATYPE_REG)
+  {
+    std::cout << "R(" << mRegister << ")";
+  }
+  else if(mDataType==DATATYPE_OPER && mOperation==OPERATION_DEREF)
+  {
+    std::cout << "[";
+    mOperand->debugPrint();
+    std::cout << "]";
+  }
+  else if(mDataType==(DATATYPE_REG|DATATYPE_OPER))
+  {
+    std::cout << "R(" << mRegister << ") " << operations_s << " ";
+    mOperand->debugPrint();
+  }
 }
 
 //R3+R2 LSL 3
@@ -82,8 +119,10 @@ Data StatelessData::resolve(int changelistNumber, RegisterFile *r, Memory *m)
   }
   else if(mDataType==DATATYPE_OPER)
   {
-    if(OPERATION_NONE) return mOperand->resolve(changelistNumber, r,m);
-    else if(OPERATION_DEREF) return (*m)[mOperand->resolve(changelistNumber, r,m)][changelistNumber];
+    if(mOperation==OPERATION_NONE)
+      return mOperand->resolve(changelistNumber, r,m);
+    else if(mOperation==OPERATION_DEREF)
+      return (*m)[mOperand->resolve(changelistNumber, r,m)][changelistNumber];
 
     debug << "can't eval high operation" << std::endl;
     return 0;
@@ -104,8 +143,9 @@ Location StatelessData::resolveLocation(int changelistNumber, RegisterFile *r, M
   }
   else if(mDataType==DATATYPE_OPER)
   {
-    if(OPERATION_NONE) { debug << "i'm confused" << std::endl; return 0; }
-    else if(OPERATION_DEREF) return Location(mOperand->resolve(changelistNumber, r,m));  //resolved memory address
+    if(mOperation==OPERATION_NONE) { debug << "i'm confused" << std::endl; return 0; }
+    else if(mOperation==OPERATION_DEREF)
+      return Location(mOperand->resolve(changelistNumber, r,m));  //resolved memory address
 
     debug << "can't eval high operation" << std::endl;
     return 0;
@@ -120,7 +160,9 @@ Data StatelessData::evaluateOperation(Data lhs, Data rhs, int operation)
     case OPERATION_AND: return lhs&rhs;
     case OPERATION_XOR: return lhs^rhs;
     case OPERATION_SUB: return lhs-rhs;
+    case OPERATION_RSB: return rhs-lhs;
     case OPERATION_ADD: return lhs+rhs;
+
     case OPERATION_ORR: return lhs|rhs;
     case OPERATION_BIC: return lhs&(~rhs);
     case OPERATION_LSL: return lhs<<rhs;

@@ -19,7 +19,7 @@ class Instruction
 public:
   //important disassembly constructor in the arch
   ParsedInstruction mString;    //this is the String the instruction looks like
-private:
+//protected:
   StatelessChangelist mAction;  //this is the Action the instruction does
 };
 

@@ -4,7 +4,7 @@
 #ifndef EDA_MEMORY_H_
 #define EDA_MEMORY_H_
 
-#include "../edaMacros.h"
+#include "../include/macros.h"
 
 //not actually implementing this now, just the interface, so I can do ChangeList
 //actually I'll implement really dumbly in this header for now, really needs pagetableish things

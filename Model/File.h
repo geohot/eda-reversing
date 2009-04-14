@@ -4,7 +4,7 @@
 #ifndef EDA_FILE_H_
 #define EDA_FILE_H_
 
-#include "../edaMacros.h"
+#include "../include/macros.h"
 #include <map>
 #include <string>
 

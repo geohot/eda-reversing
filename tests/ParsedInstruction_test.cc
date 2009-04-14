@@ -8,7 +8,7 @@ using namespace std;
 int ParsedInstruction_test()
 {
   eda::ParsedInstruction test;
-  test.add("LDR",DT_INSTRUCTION);
+  test.add("LDR",DT_OPCODE);
   test.add("EQ",DT_CONDITION);
   test.add(" ",DT_FORMATTING);
   test.add("R1",DT_REGISTER);
