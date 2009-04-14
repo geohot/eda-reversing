@@ -13,7 +13,7 @@ Core::~Core() {
 void Core::update() {
 }
 
-void Core::run() {
+void Core::test() {
   // From testSuite.cc
   cout << "running tests.          " << endl;
   cout << "ParsedInstruction test: "; //ParsedInstruction_test();

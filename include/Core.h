@@ -9,7 +9,7 @@ public:
   Core(Edb* edb, Server* server);
   virtual ~Core();
   virtual void update();
-  virtual void run();
+  virtual void test();
 
 private:
   Edb* mEdb;
