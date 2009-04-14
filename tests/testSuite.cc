@@ -2,7 +2,7 @@
 //    by geohot
 
 #include <iostream>
-#include <iomanip>
+#include "../edaMacros.h"
 using namespace std;
 
 int ParsedInstruction_test();
@@ -13,5 +13,6 @@ int main()
   cout << "running tests.          " << endl;
   cout << "ParsedInstruction test: "; ParsedInstruction_test();
   cout << "File test:              "; File_test();
+  cout << "debug macro test:       "; debug << "test" << endl;
   return 0;
 }

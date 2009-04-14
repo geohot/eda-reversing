@@ -7,6 +7,8 @@
 #include "../Instruction.h"
 #include "../../edaMacros.h"
 
+#include "InstructionARM.h"
+
 namespace eda {
 
 class InstructionARM : public Instruction
@@ -14,6 +16,14 @@ class InstructionARM : public Instruction
 public:
   InstructionARM(Data opcode);  //disassembler
 private:
+  bool init(Data opcode);
+  bool initDataProcessing();
+  bool initLoadStore();
+  bool initMiscellaneous();
+  bool initBranches();
+  int mEncodingARM;
+  Data mOpcode;
+  bool mValid;
   //will probably have private functions
 };
 

@@ -17,6 +17,8 @@ namespace eda {
 #define DT_REGISTER 2
 #define DT_IMMED 3
 #define DT_FORMATTING 4
+#define DT_FLAGS 5
+#define DT_SYMBOL 6
 
 class ParsedInstruction
 {

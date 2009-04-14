@@ -22,4 +22,5 @@ int File_test()
 
   cout << test[100] << " pass" << endl;
 
+  return 0;
 }

@@ -10,7 +10,8 @@
 
 //define a debug print macro here
 
-#define debug if (0) ; else std::cerr << __FILE__ << "(" << __FUNCTION__ << ") "
+#define THIS_FILE ((strrchr(__FILE__, 0x5C) ?: __FILE__ - 1) + 1)
+#define debug if (0) ; else std::cerr << THIS_FILE << "--" << __PRETTY_FUNCTION__ << ": "
 
 
 #endif /* EDA_EDAMACROS_H_ */

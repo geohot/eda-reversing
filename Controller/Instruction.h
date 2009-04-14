@@ -5,8 +5,7 @@
 #define EDA_INSTRUCTION_H_
 
 //not sure whether this belongs in the controller or the model
-//model works without it, but will store it, controller needs
-
+//model works without it but will store it, controller needs
 
 //forward declares here instead?
 #include "../Model/ParsedInstruction.h"
@@ -19,9 +18,9 @@ class Instruction
 {
 public:
   //important disassembly constructor in the arch
+  ParsedInstruction mString;    //this is the String the instruction looks like
 private:
   StatelessChangelist mAction;  //this is the Action the instruction does
-  ParsedInstruction mString;    //this is the String the instruction looks like
 };
 
 }
