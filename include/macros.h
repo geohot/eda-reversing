@@ -6,6 +6,7 @@
 #define EDA_EDAMACROS_H_
 
 #include <iostream>
+#include <cstring>
 
 #define Data unsigned int
 
