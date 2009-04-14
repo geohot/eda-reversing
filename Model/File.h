@@ -14,6 +14,7 @@ namespace eda {
 class File
 {
 public:
+  File();
   Data& operator[](int changelistNumber);
   void set(int changelistNumber, Data data);
 private:

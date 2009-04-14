@@ -74,7 +74,7 @@ void StatelessData::debugPrint()
   }
   else if(mDataType==DATATYPE_REG)
   {
-    std::cout << "R(" << mRegister << ")";
+    std::cout << "R(" << std::dec << mRegister << ")";
   }
   else if(mDataType==DATATYPE_OPER && mOperation==OPERATION_DEREF)
   {
@@ -84,7 +84,7 @@ void StatelessData::debugPrint()
   }
   else if(mDataType==(DATATYPE_REG|DATATYPE_OPER))
   {
-    std::cout << "R(" << mRegister << ") " << operations_s << " ";
+    std::cout << "R(" << std::dec << mRegister << ") " << operations_s[mOperation] << " ";
     mOperand->debugPrint();
   }
 }

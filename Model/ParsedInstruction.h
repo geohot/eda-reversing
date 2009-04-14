@@ -20,10 +20,11 @@ namespace eda {
 #define DT_REGISTER 2
 #define DT_IMMED 3
 #define DT_FORMATTING 4
-#define DT_FLAGS 5
+#define DT_FLAG 5
 #define DT_SYMBOL 6
 #define DT_DECIMAL 7
 #define DT_SUBOPCODE 8
+#define DT_SIGNED 9
 
 class ParsedInstruction
 {

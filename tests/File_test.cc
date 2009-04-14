@@ -17,7 +17,10 @@ int File_test()
   test.set(8, 0x104);
 
   assert(test[4]==0x50);
-  assert(test[7]==0x50);
+  test.set(4, 0x12);
+  assert(test[4]==0x12);
+
+  assert(test[7]==0x12);
   assert(test[10]==0x104);
   assert(test[1]==0x20);
 

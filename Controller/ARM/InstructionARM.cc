@@ -12,7 +12,8 @@ using namespace eda;
 InstructionARM::InstructionARM(Data opcode)
 {
   mOpcode=opcode;
-  init(); //keep work out of the constructor
+  if(!init())
+    mString << "UNDEFINED"; //keep work out of the constructor
 }
 
 bool InstructionARM::init()
@@ -46,7 +47,7 @@ bool InstructionARM::initDataProcessing()
 //********************Instruction********************
   mString << opcodesARM(i->dpis.opcode);
   if(i->dpis.S && (i->dpis.opcode<8 || i->dpis.opcode>=12))
-    mString.add("S",DT_FLAGS);
+    mString.add("S",DT_FLAG);
   mString << conditionsARM(i->generic.cond) << " ";
 
 //********************Data********************
@@ -91,6 +92,7 @@ bool InstructionARM::initDataProcessing()
 //wrapping right in operator
   if(i->dpis.opcode!=OPCODE_MOV && i->dpis.opcode!=OPCODE_MVN)
     right=new StatelessData((int)i->generic.Rn, i->dpis.opcode, right);
+  //else right stays the same
 //adding the action to the changelist
   mAction.addChange(StatelessData((int)i->generic.Rd), *right);
   delete right;         //done with this, should've been copied into the stateless_changelist
@@ -99,15 +101,132 @@ bool InstructionARM::initDataProcessing()
 
 bool InstructionARM::initLoadStore()
 {
-  return false;
-}
+  templateInstructionARM *i=(templateInstructionARM *)&mOpcode;
+//********************Instruction********************
+  mString.add( (i->lsio.L)?"LD":"ST", DT_FLAG);
+  mString.add( (mEncodingARM==ARM_LSM)?"M":"R" , DT_OPCODE);
 
-bool InstructionARM::initMiscellaneous()
-{
-  return false;
+  if( (mEncodingARM==ARM_LSIO || mEncodingARM==ARM_LSRO) && i->lsio.B )
+    mString.add("B",DT_FLAG);
+  else if(mEncodingARM==ARM_LSM)
+  {
+    mString.add( (i->lsm.U)?"I":"D", DT_FLAG);
+    mString.add( (i->lsm.P)?"B":"A", DT_FLAG);
+  }
+  else if(mEncodingARM==ARM_MELS)
+    if(i->mels.H) mString.add("H",DT_FLAG);
+
+  mString << conditionsARM(i->generic.cond) << " ";
+//********************Data********************
+//  **First**
+  if(mEncodingARM==ARM_LSM)
+  {
+    mString << registersARM(i->generic.Rn);
+    if(i->lsm.W) mString.add("!",DT_FLAG);
+    mString << ", ";
+  }
+  else
+    mString << registersARM(i->generic.Rd) << ", ";
+//  **Second**
+  if(mEncodingARM==ARM_LSM)
+  {
+    mString.add("{",DT_SYMBOL);
+
+    int reg=i->lsm.register_list;
+    int oper=(i->lsm.U)?OPERATION_ADD:OPERATION_SUB;
+    int rcount=0;
+    StatelessData *offset;
+    for(int a=0;a<16;a++)       //the registers
+    {
+      if(reg&0x1)
+      {
+        //add the change
+        if(i->lsm.P) rcount++;
+        offset=new StatelessData((Data)rcount*4);
+        if(!(i->lsm.P)) rcount++;
+
+        offset=new StatelessData(i->generic.Rn, oper, offset);
+
+        mAction.addChange(
+            StatelessData(OPERATION_DEREF, offset),
+            StatelessData(a));
+        //print it
+        mString << registersARM(a);
+        reg>>=1;
+        if(reg>0)
+          mString << ", ";
+      }
+      else reg>>=1;
+    }
+    mString.add("}",DT_SYMBOL);
+    if(i->lsm.W)        //handle writeback
+      mAction.addChange(StatelessData((int)i->generic.Rn),
+          StatelessData(i->generic.Rn, oper, new StatelessData((Data)rcount*4) ) );
+  }
+  else
+  {
+    mString.add("[",DT_SYMBOL);
+    mString << registersARM(i->generic.Rn);
+    if(mEncodingARM==ARM_LSIO)
+    {
+      if(i->lsio.immed!=0)
+      {
+        mString << ", ";
+        mString.add(((i->lsio.U)?(1):(-1))*(i->lsio.immed), DT_SIGNED);
+        StatelessData *g;
+        if(i->lsio.U)
+          g=new StatelessData(i->generic.Rn, OPERATION_ADD, new StatelessData((Data)i->lsio.immed));
+        else
+          g=new StatelessData(i->generic.Rn, OPERATION_SUB, new StatelessData((Data)i->lsio.immed));
+        mAction.addChange(StatelessData(i->generic.Rd), StatelessData(OPERATION_DEREF, g));
+      }
+      else
+        mAction.addChange(StatelessData(i->generic.Rd), StatelessData(OPERATION_DEREF, new StatelessData(i->generic.Rn)));
+    }
+    else if(mEncodingARM==ARM_LSRO)
+    {
+      StatelessData *right;
+      mString << ", " << registersARM(i->lsro.Rm);
+      if(i->lsro.shift_imm!=0 || i->lsro.shift!=0)
+      {
+        mString << " " << shiftsARM(i->lsro.shift) << " " << i->lsro.shift_imm;
+        right=new StatelessData((int)i->lsro.Rm,
+          OPERATION_LSL+(i->lsro.shift),
+          new StatelessData((Data)i->lsro.shift_imm));
+      }
+      else right=new StatelessData((int)i->lsro.Rm);
+      right=new StatelessData((int)i->generic.Rn, OPERATION_ADD, right);
+      mAction.addChange(StatelessData(i->generic.Rd), StatelessData(OPERATION_DEREF, right));
+    }
+    mString.add("]",DT_SYMBOL);
+  }
+  return true;
 }
 
 bool InstructionARM::initBranches()
+{
+  templateInstructionARM *i=(templateInstructionARM *)&mOpcode;
+//********************Instruction********************
+  mString.add("B",DT_OPCODE);
+  if(i->bbl.L) mString.add("L",DT_FLAG);
+  mString << conditionsARM(i->generic.cond) << " ";
+//********************Data********************
+//  **First**
+  int bl=((i->bbl.offset&0x800000)?(0xFC000000):0)|(i->bbl.offset<<2);
+  if(bl<0) mString << registersARM(REG_PC) << "-" << (Data)bl;
+  else if(bl>0) mString << registersARM(REG_PC) << "+" << (Data)bl;
+  else mString << registersARM(REG_PC);
+
+  mAction.addChange(StatelessData((int)REG_PC),
+      StatelessData((int)REG_PC, OPERATION_ADD, new StatelessData((Data)bl) ) );
+
+  if(i->bbl.L)
+    mAction.addChange(StatelessData((int)REG_LR), StatelessData((int)REG_PC));   //LR=PC
+
+  return true;
+}
+
+bool InstructionARM::initMiscellaneous()
 {
   return false;
 }

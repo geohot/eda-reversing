@@ -13,6 +13,7 @@
 
 #define THIS_FILE ((strrchr(__FILE__, 0x5C) ?: __FILE__ - 1) + 1)
 #define debug if (0) ; else std::cerr << THIS_FILE << "--" << __PRETTY_FUNCTION__ << ": "
+#define info if (0) ; else std::cout << std::hex << THIS_FILE << ": "
 
 #define u32 unsigned int
 #define u8 unsigned char
