@@ -228,7 +228,30 @@ bool InstructionARM::initBranches()
 
 bool InstructionARM::initMiscellaneous()
 {
-  return false;
+  //i don't know what these do
+  templateInstructionARM *i=(templateInstructionARM *)&mOpcode;
+//********************Instruction********************
+  mString.add("M",DT_OPCODE);
+  mString.add((i->mi.L)?"SR":"RS",DT_FLAG);
+  mString << conditionsARM(i->generic.cond) << " ";
+//********************Data********************
+//  **First**
+  if(!(i->mi.L))
+  {
+    mString << registersARM(i->generic.Rd) << ", ";
+  }
+//  **Second**
+  mString << registersARM(16+i->mi.R);
+  if(i->mi.L)
+  {
+    mString.add("_",DT_SYMBOL);
+    if(i->mi.mb_c) mString.add("c",DT_SYMBOL);
+    if(i->mi.mb_x) mString.add("x",DT_SYMBOL);
+    if(i->mi.mb_s) mString.add("s",DT_SYMBOL);
+    if(i->mi.mb_f) mString.add("f",DT_SYMBOL);
+  }
+
+  return true;
 }
 
 int InstructionARM::getEncodingARM(Data opcode)
