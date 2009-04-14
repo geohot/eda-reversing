@@ -1,5 +1,6 @@
 // InstructionARM.h -- Apr 13, 2009
 //    by geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
 
 #ifndef EDA_INSTRUCTIONARM_H_
 #define EDA_INSTRUCTIONARM_H_

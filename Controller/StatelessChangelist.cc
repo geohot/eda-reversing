@@ -1,5 +1,6 @@
 // StatelessChangelist.cc -- Apr 12, 2009
 //    by geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
 
 #include "../Model/RegisterFile.h"
 #include "../Model/Memory.h"

@@ -1,5 +1,6 @@
 // Memory.h -- Apr 13, 2009
 //    by geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
 
 #ifndef EDA_MEMORY_H_
 #define EDA_MEMORY_H_

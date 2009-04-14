@@ -1,5 +1,6 @@
 // edaMacros.h -- Apr 13, 2009
 //    by geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
 
 #ifndef EDA_EDAMACROS_H_
 #define EDA_EDAMACROS_H_

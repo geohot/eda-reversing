@@ -1,5 +1,6 @@
 // InstructionARM.cc -- Apr 13, 2009
 //    by geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
 
 //this is the ARM disassembler
 

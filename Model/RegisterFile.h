@@ -1,5 +1,6 @@
 // RegisterFile.h -- Apr 13, 2009
 //    by geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
 
 #ifndef EDA_REGISTERFILE_H_
 #define EDA_REGISTERFILE_H_

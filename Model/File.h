@@ -1,5 +1,6 @@
 // File.h -- Apr 12, 2009
 //    by geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
 
 #ifndef EDA_FILE_H_
 #define EDA_FILE_H_

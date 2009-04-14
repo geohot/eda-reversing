@@ -1,5 +1,6 @@
 // StatelessChangelist.h -- Apr 12, 2009
 //    by geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
 
 #ifndef EDA_STATELESSCHANGELIST_H_
 #define EDA_STATELESSCHANGELIST_H_

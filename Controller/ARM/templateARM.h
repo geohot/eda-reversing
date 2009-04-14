@@ -1,5 +1,6 @@
 // templateARM.h -- Apr 13, 2009
 //    by geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
 
 #ifndef EDA_TEMPLATEARM_H_
 #define EDA_TEMPLATEARM_H_
