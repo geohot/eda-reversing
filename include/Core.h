@@ -6,13 +6,13 @@ namespace eda {
 
 class Core: public Observer {
 public:
-  Core(Edb* edb, Server* server);
+  Core(Bank* bank, Server* server);
   virtual ~Core();
   virtual void update();
   virtual void test();
 
 private:
-  Edb* mEdb;
+  Bank* mBank;
   Server* mServer;
 
 };

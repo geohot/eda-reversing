@@ -18,6 +18,7 @@ namespace eda {
 class Memory
 {
 public:
+  //default constructor
   File& operator[](Data address);
   bool allocate(Data, int);
   void debugPrint();

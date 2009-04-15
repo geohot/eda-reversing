@@ -5,8 +5,8 @@
 #ifndef EDA_CONSOLEFRONTEND_H_
 #define EDA_CONSOLEFRONTEND_H_
 
-#include "Mailbox.h"
 #include "threading.h"
+#include "Mailbox.h"
 #include "macros.h"
 
 namespace eda

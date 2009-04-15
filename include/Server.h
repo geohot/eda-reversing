@@ -1,17 +1,17 @@
 #ifndef SERVER_H_
 #define SERVER_H_
-#include "Edb.h"
+#include "Bank.h"
 
 namespace eda {
 
 class Server: public Observable, public Observer {
 public:
-  Server(Edb* edb);
+  Server(Bank* bank);
   virtual ~Server();
   virtual void update();
 
 private:
-  Edb* mEdb;
+  Bank* mBank;
 };
 
 }

@@ -2,7 +2,7 @@
 
 namespace eda {
 
-Server::Server(Edb* edb): mEdb(edb) {
+Server::Server(Bank* bank): mBank(bank) {
 }
 
 Server::~Server() {

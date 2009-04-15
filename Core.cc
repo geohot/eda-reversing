@@ -12,7 +12,7 @@ int Memory_test();
 
 namespace eda {
 
-Core::Core(Edb* edb, Server* server): mEdb(edb), mServer(server) {
+Core::Core(Bank* bank, Server* server): mBank(bank), mServer(server) {
 }
 
 Core::~Core() {

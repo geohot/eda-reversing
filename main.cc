@@ -8,12 +8,12 @@ using namespace eda;
 int main(int argc, char* argv[])
 {
   // create MVC objects
-  Edb* edb = new Edb();
-  Server* server = new Server(edb);
-  Core* core = new Core(edb, server);
+  Bank* bank = new Bank();
+  Server* server = new Server(bank);
+  Core* core = new Core(bank, server);
 
   // make indirect attachments
-  edb->attach(server);
+  bank->attach(server);
   server->attach(core);
 
   // run application
@@ -22,5 +22,5 @@ int main(int argc, char* argv[])
   // clean up
   delete core;
   delete server;
-  delete edb;
+  delete bank;
 }
