@@ -8,6 +8,7 @@
 #include "threading.h"
 #include "Mailbox.h"
 #include "macros.h"
+#include "Core.h"
 
 namespace eda
 {
@@ -16,15 +17,15 @@ class ConsoleFrontEnd
 {
 public:
   ConsoleFrontEnd();
-  ConsoleFrontEnd(Mailbox *core, Mailbox *edb);
+  ConsoleFrontEnd(Bank *bank);
   ~ConsoleFrontEnd();
-  void chill();         //hang out here until the thread finishes
+  void attach(Core *);
 private:
   static void entryPoint(void *);
   void runLoop();
   threadContainer mThread;
   Mailbox *mCore;
-  Mailbox *mEdb;
+  Bank *mBank;
 };
 
 }

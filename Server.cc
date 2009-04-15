@@ -1,4 +1,9 @@
+// Server.cc -- Apr 14, 2009
+//    by posixninja, geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
+
 #include "Server.h"
+#include "Core.h"
 
 namespace eda {
 
@@ -12,3 +17,8 @@ void Server::update() {
 }
 
 }
+
+/*void Server::attach(Core *a)
+{
+  mCore=a->mMail;
+}*/

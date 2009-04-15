@@ -1,5 +1,8 @@
-#include "ConsoleFrontEnd.h"
+// Core.cc -- Apr 14, 2009
+//    by posixninja, geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
 
+#include "Mailbox.h"
 #include <iostream>
 #include "Core.h"
 #include "macros.h"
@@ -12,13 +15,25 @@ int Memory_test();
 
 namespace eda {
 
-Core::Core(Bank* bank, Server* server): mBank(bank), mServer(server) {
+Core::Core(Bank* bank): mBank(bank) {
+
 }
 
 Core::~Core() {
 }
 
 void Core::update() {
+}
+
+void Core::runLoop()
+//this is where the Core actually works
+//it is event driven completely
+{
+  while(1)
+  {
+    Mail yay=mMail.waitForMail();
+    info << "i've got mail: " << yay.mCommand << endl;
+  }
 }
 
 void Core::test() {
@@ -29,13 +44,9 @@ void Core::test() {
   cout << "debug macro test:       "; info << "test" << endl;
   cout << "InstructionARM test:    "; InstructionARM_test();
   cout << "Memory test:            "; Memory_test();*/
-  Mailbox test;
-  ConsoleFrontEnd a(&test,0);
-  while(1)
-  {
-    Mail yay=test.waitForMail();
-    cout << "i've got mail: " << yay.mCommand << endl;
-  }
+  /*Mailbox test;
+  ConsoleFrontEnd a(&test,0);*/
+
   return;// 0;
 }
 

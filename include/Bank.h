@@ -1,5 +1,5 @@
 // Bank.h -- Apr 13, 2009
-//    by posixninja
+//    by posixninja, geohot
 //  released under GPLv3, see http://gplv3.fsf.org/
 
 #ifndef EDA_BANK_H_

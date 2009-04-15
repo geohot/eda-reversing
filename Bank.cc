@@ -1,3 +1,7 @@
+// Bank.cc -- Apr 14, 2009
+//    by posixninja, geohot
+//  released under GPLv3, see http://gplv3.fsf.org/
+
 #include "Bank.h"
 
 namespace eda {

@@ -8,6 +8,7 @@
 #include "Mailbox.h"
 #include "ConsoleFrontEnd.h"
 #include "macros.h"
+#include "bank.h"
 
 #include <iostream>
 using namespace std;
@@ -15,23 +16,22 @@ using namespace std;
 namespace eda
 {
 
-ConsoleFrontEnd::ConsoleFrontEnd(Mailbox *core, Mailbox *edb)
+ConsoleFrontEnd::ConsoleFrontEnd(Bank *bank): mBank(bank)
 {
   info << "creating thread" << endl;
   threadCreate(&mThread, &eda::ConsoleFrontEnd::entryPoint, this);
-  mCore=core;   //mail to the core
-  mEdb=edb;     //mail to the model
+}
+
+//attach to the Core's mailbox
+void ConsoleFrontEnd::attach(Core *a)
+{
+  mCore=&a->mMail;
 }
 
 ConsoleFrontEnd::~ConsoleFrontEnd()
 {
   info << "destroying thread" << endl;
   threadDestroy(&mThread);
-}
-
-void ConsoleFrontEnd::chill()
-{
-  threadWait(&mThread);
 }
 
 void ConsoleFrontEnd::entryPoint(void *param)
