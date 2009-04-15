@@ -2,7 +2,7 @@
 //    by geohot
 //  released under GPLv3, see http://gplv3.fsf.org/
 
-#include "../include/macros.h"
+#include "macros.h"
 #include "Memory.h"
 #include <iostream>
 #include <iomanip>

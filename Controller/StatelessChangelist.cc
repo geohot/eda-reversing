@@ -2,8 +2,8 @@
 //    by geohot
 //  released under GPLv3, see http://gplv3.fsf.org/
 
-#include "../Model/RegisterFile.h"
-#include "../Model/Memory.h"
+#include "RegisterFile.h"
+#include "Memory.h"
 
 #include "StatelessChangelist.h"
 

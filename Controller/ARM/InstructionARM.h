@@ -2,11 +2,13 @@
 //    by geohot
 //  released under GPLv3, see http://gplv3.fsf.org/
 
+//not moved into include on purpose
+
 #ifndef EDA_INSTRUCTIONARM_H_
 #define EDA_INSTRUCTIONARM_H_
 
-#include "../Instruction.h"
-#include "../../include/macros.h"
+#include "Instruction.h"
+#include "macros.h"
 
 #include "InstructionARM.h"
 

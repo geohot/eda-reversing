@@ -2,11 +2,13 @@
 //    by geohot
 //  released under GPLv3, see http://gplv3.fsf.org/
 
+//not moved into include on purpose
+
 #ifndef EDA_TEMPLATEARM_H_
 #define EDA_TEMPLATEARM_H_
 
 #include <string>
-#include "../../Model/ParsedInstruction.h"
+#include "ParsedInstruction.h"
 
 typedef union
 {

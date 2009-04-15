@@ -2,7 +2,7 @@
 //    by geohot
 //  released under GPLv3, see http://gplv3.fsf.org/
 
-#include "../Model/Memory.h"
+#include "Memory.h"
 #include <iostream>
 #include <cassert>
 

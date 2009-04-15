@@ -2,7 +2,7 @@
 //    by geohot
 //  released under GPLv3, see http://gplv3.fsf.org/
 
-#include "../Model/ParsedInstruction.h"
+#include "ParsedInstruction.h"
 
 using namespace std;
 
