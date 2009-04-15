@@ -28,13 +28,13 @@ public:
   {
 
   }
-  Mail(int lcmd, std::string lparam)
+  Mail(int lcmd, int lparam)
   {
-    mType=lcmd;
+    mCommand=lcmd;
     mParam=lparam;
   }
-  int mType;
-  std::string mParam;
+  int mCommand;
+  int mParam;
 };
 
 class Mailbox

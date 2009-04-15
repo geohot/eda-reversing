@@ -11,20 +11,34 @@
 #include <vector>
 #include "Memory.h"
 #include "RegisterFile.h"
+#include "Instruction.h"
+#include "FunctionCache.h"
+
+#define LOCKED_NONE 0
+#define LOCKED_CORE 1
+#define LOCKED_SERVER 2
+#define LOCKED_WEBSERVER 3
 
 namespace eda {
+
+#define InstructionIterator std::map<Data,Instruction>::iterator
 
 class Bank: public Observable {
 public:
   Bank();
   virtual ~Bank();
-  void lock();
-  void unlock();
+  void lock(int locker);
+  void unlock(int locker);
+  void waitForAction();                 //wait for lock and unlock
+  Memory* mem();
   std::vector<RegisterFile>::iterator currentRegisterFile;
-  Memory mMem;
+  std::map<Data,Instruction> mInstructionCache;
+  FunctionCache mFunctionCache;
 private:
   std::vector<RegisterFile> RegisterFiles;
   mutexContainer mBankMutex;
+  int mLocker,mLockCount;
+  Memory mMem;
 };
 
 }

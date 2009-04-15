@@ -27,29 +27,20 @@ Core::Core(Bank* bank): mBank(bank) {
 Core::~Core() {
 }
 
-void Core::disassemble(int addr)
+InstructionIterator Core::disassemble(Data addr)
 {
   info << "I am a generic Core, I can't disassemble" << endl;
+  return 0;
+}
+
+void Core::fastAnalyse(Data addr)
+{
+  info << "I am a generic Core, I can't fastAnalyse" << endl;
+  return;
 }
 
 void Core::update() {
 }
-
-/*bool Core::lexer(Mail event)
-{
-  vector<string> argv;
-  string cmd=event.mParam;
-  size_t start=cmd.find_first_not_of(" ",0);
-  size_t end=cmd.find_first_of(" ", start);
-  while(end!=string::npos || start!=string::npos)
-  {
-    argv.push_back(cmd.substr(start,end-start));
-    start=cmd.find_first_not_of(" ",end);
-    end=cmd.find_first_of(" ", start);
-  }
-  //if(argv[0])
-
-}*/
 
 void Core::runLoop()
 //this is where the Core actually works
@@ -58,9 +49,15 @@ void Core::runLoop()
   while(1)
   {
     Mail event=mMail.waitForMail();
-    if(event.mType==MAIL_SERVER)
+    if(event.mCommand==CORE_DISASSEMBLE)
+    {
+      //cout << "disassembling " << event.mParam << endl;
+      disassemble((Data)event.mParam);
       //lexer(event);
-    info << "i've got mail: " << event.mParam << endl;
+    }
+    else if(event.mCommand==CORE_ANALYSE)
+      fastAnalyse((Data)event.mParam);
+    //info << "i've got mail: " << event.mParam << endl;
   }
 }
 

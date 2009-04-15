@@ -101,7 +101,7 @@ bool Memory::loadFile(const char *filename, Data address)
     {
       (*d)[(t*4)+cl].set(0,buffer[t]);      //loads are all on changelist 0 for now
     }
-    cl+=rlen;
+    cl+=rlen*4;
   }
 
   return true;
@@ -129,6 +129,7 @@ void Memory::consoleDump(Data address, int len, int changelistNumber)
       break;
     }
     if(t!=0&&((t%0x10)==0)) printf("\n");
+    if((t%0x10)==0) { std::cout << std::hex << address+t << ": "; }
     std::cout << std::hex << std::setfill('0') << std::setw(8) <<
       (*this)[address+t][changelistNumber] << " ";
   }

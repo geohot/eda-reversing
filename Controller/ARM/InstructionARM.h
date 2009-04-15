@@ -14,6 +14,8 @@
 
 namespace eda {
 
+#define CONDITION_ALWAYS 0xE
+
 class InstructionARM : public Instruction
 {
 public:

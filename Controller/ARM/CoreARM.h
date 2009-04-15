@@ -8,15 +8,17 @@
 //intentionally not with the other header files
 
 #include "Core.h"
+#include "Bank.h"
 
-namespace eda{
+namespace eda {
+
 
 class CoreARM : public Core
 {
 public:
-  void disassemble(int addr);   //should add to instruction cache
-
-
+  CoreARM(Bank* bank);
+  InstructionIterator disassemble(Data);   //should add to instruction cache
+  void fastAnalyse(Data);
 };
 
 }

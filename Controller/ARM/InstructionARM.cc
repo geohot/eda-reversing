@@ -12,11 +12,16 @@ using namespace eda;
 InstructionARM::InstructionARM(Data opcode)
 {
   mOpcode=opcode;
+  templateInstructionARM *i=(templateInstructionARM *)&mOpcode;
+  mConditional=!(((i->generic.cond)==0xE) || ((i->generic.cond)==0xF));        //always run
+  mBranch=false;
+  mReturn=false;
   if(!init())
-    mString << "UNDEFINED"; //keep work out of the constructor
+    mString << "UNDEFINED: " << encodingsARM[getEncodingARM(mOpcode)];
 }
 
 bool InstructionARM::init()
+//keep work out of the constructor
 {
   mEncodingARM=getEncodingARM(mOpcode);
   switch(mEncodingARM)
@@ -31,6 +36,7 @@ bool InstructionARM::init()
     case ARM_MELS:
       return initLoadStore();
     case ARM_MI:        //Miscellaneous instructions
+    case ARM_MISR:
       return initMiscellaneous();
     case ARM_BBL:       //Branch and branch with link
       return initBranches();
@@ -140,12 +146,13 @@ bool InstructionARM::initLoadStore()
     {
       if(reg&0x1)
       {
+        if(a==REG_PC) mReturn=true;
         //add the change
         if(i->lsm.P) rcount++;
         offset=new StatelessData((Data)rcount*4);
         if(!(i->lsm.P)) rcount++;
 
-        offset=new StatelessData(i->generic.Rn, oper, offset);
+        offset=new StatelessData((int)i->generic.Rn, oper, offset);
 
         mAction.addChange(
             StatelessData(OPERATION_DEREF, offset),
@@ -161,7 +168,7 @@ bool InstructionARM::initLoadStore()
     mString.add("}",DT_SYMBOL);
     if(i->lsm.W)        //handle writeback
       mAction.addChange(StatelessData((int)i->generic.Rn),
-          StatelessData(i->generic.Rn, oper, new StatelessData((Data)rcount*4) ) );
+          StatelessData((int)i->generic.Rn, oper, new StatelessData((Data)rcount*4) ) );
   }
   else
   {
@@ -175,13 +182,13 @@ bool InstructionARM::initLoadStore()
         mString.add(((i->lsio.U)?(1):(-1))*(i->lsio.immed), DT_SIGNED);
         StatelessData *g;
         if(i->lsio.U)
-          g=new StatelessData(i->generic.Rn, OPERATION_ADD, new StatelessData((Data)i->lsio.immed));
+          g=new StatelessData((int)i->generic.Rn, OPERATION_ADD, new StatelessData((Data)i->lsio.immed));
         else
-          g=new StatelessData(i->generic.Rn, OPERATION_SUB, new StatelessData((Data)i->lsio.immed));
-        mAction.addChange(StatelessData(i->generic.Rd), StatelessData(OPERATION_DEREF, g));
+          g=new StatelessData((int)i->generic.Rn, OPERATION_SUB, new StatelessData((Data)i->lsio.immed));
+        mAction.addChange(StatelessData((int)i->generic.Rd), StatelessData(OPERATION_DEREF, g));
       }
       else
-        mAction.addChange(StatelessData(i->generic.Rd), StatelessData(OPERATION_DEREF, new StatelessData(i->generic.Rn)));
+        mAction.addChange(StatelessData((int)i->generic.Rd), StatelessData(OPERATION_DEREF, new StatelessData((int)i->generic.Rn)));
     }
     else if(mEncodingARM==ARM_LSRO)
     {
@@ -196,7 +203,7 @@ bool InstructionARM::initLoadStore()
       }
       else right=new StatelessData((int)i->lsro.Rm);
       right=new StatelessData((int)i->generic.Rn, OPERATION_ADD, right);
-      mAction.addChange(StatelessData(i->generic.Rd), StatelessData(OPERATION_DEREF, right));
+      mAction.addChange(StatelessData((int)i->generic.Rd), StatelessData(OPERATION_DEREF, right));
     }
     mString.add("]",DT_SYMBOL);
   }
@@ -206,6 +213,8 @@ bool InstructionARM::initLoadStore()
 bool InstructionARM::initBranches()
 {
   templateInstructionARM *i=(templateInstructionARM *)&mOpcode;
+  mBranch=true;         //we know this is a branchs
+  mLinkedBranch=(i->bbl.L);     //is this a linkedBranch
 //********************Instruction********************
   mString.add("B",DT_OPCODE);
   if(i->bbl.L) mString.add("L",DT_FLAG);
@@ -213,7 +222,7 @@ bool InstructionARM::initBranches()
 //********************Data********************
 //  **First**
   int bl=((i->bbl.offset&0x800000)?(0xFC000000):0)|(i->bbl.offset<<2);
-  if(bl<0) mString << registersARM(REG_PC) << "-" << (Data)bl;
+  if(bl<0) mString << registersARM(REG_PC) << "-" << (0-(Data)bl);
   else if(bl>0) mString << registersARM(REG_PC) << "+" << (Data)bl;
   else mString << registersARM(REG_PC);
 
@@ -250,6 +259,7 @@ bool InstructionARM::initMiscellaneous()
     if(i->mi.mb_s) mString.add("s",DT_SYMBOL);
     if(i->mi.mb_f) mString.add("f",DT_SYMBOL);
   }
+  //this is missing the MISR stuff, w/e for now
 
   return true;
 }

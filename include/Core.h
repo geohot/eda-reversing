@@ -9,6 +9,10 @@
 
 namespace eda {
 
+#define CORE_NONE 0
+#define CORE_DISASSEMBLE 1
+#define CORE_ANALYSE 2
+
 class Core: public Observer {
 public:
   Core();
@@ -16,10 +20,11 @@ public:
   virtual ~Core();
   virtual void update();
   virtual void test();
-  virtual void disassemble(int);
+  virtual InstructionIterator disassemble(Data);
+  virtual void fastAnalyse(Data);
   void runLoop();
   Mailbox mMail;
-private:
+protected:
   Bank* mBank;
 
 };

@@ -5,6 +5,8 @@
 #include "Server.h"
 #include "Core.h"
 
+//i think this is what FrontEnd is now
+
 namespace eda {
 
 Server::Server(Bank* bank): mBank(bank) {
