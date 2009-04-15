@@ -10,6 +10,8 @@
 #include "macros.h"
 #include "Core.h"
 
+#include <string>
+
 namespace eda
 {
 
@@ -20,7 +22,9 @@ public:
   ConsoleFrontEnd(Bank *bank);
   ~ConsoleFrontEnd();
   void attach(Core *);
+  bool lexer(std::string);
 private:
+  int strtoint(std::string);
   static void entryPoint(void *);
   void runLoop();
   threadContainer mThread;

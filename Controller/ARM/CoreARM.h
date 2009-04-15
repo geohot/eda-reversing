@@ -13,6 +13,8 @@ namespace eda{
 
 class CoreARM : public Core
 {
+public:
+  void disassemble(int addr);   //should add to instruction cache
 
 
 };

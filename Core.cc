@@ -15,6 +15,11 @@ int Memory_test();
 
 namespace eda {
 
+Core::Core()
+{
+  info << "where's the Bank at" << endl;
+}
+
 Core::Core(Bank* bank): mBank(bank) {
 
 }
@@ -22,8 +27,29 @@ Core::Core(Bank* bank): mBank(bank) {
 Core::~Core() {
 }
 
+void Core::disassemble(int addr)
+{
+  info << "I am a generic Core, I can't disassemble" << endl;
+}
+
 void Core::update() {
 }
+
+/*bool Core::lexer(Mail event)
+{
+  vector<string> argv;
+  string cmd=event.mParam;
+  size_t start=cmd.find_first_not_of(" ",0);
+  size_t end=cmd.find_first_of(" ", start);
+  while(end!=string::npos || start!=string::npos)
+  {
+    argv.push_back(cmd.substr(start,end-start));
+    start=cmd.find_first_not_of(" ",end);
+    end=cmd.find_first_of(" ", start);
+  }
+  //if(argv[0])
+
+}*/
 
 void Core::runLoop()
 //this is where the Core actually works
@@ -31,8 +57,10 @@ void Core::runLoop()
 {
   while(1)
   {
-    Mail yay=mMail.waitForMail();
-    info << "i've got mail: " << yay.mCommand << endl;
+    Mail event=mMail.waitForMail();
+    if(event.mType==MAIL_SERVER)
+      //lexer(event);
+    info << "i've got mail: " << event.mParam << endl;
   }
 }
 

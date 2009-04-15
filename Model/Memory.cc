@@ -15,7 +15,9 @@ File& Memory::operator[](Data address)
   //info << "got access at " << address << ": ";
 
   std::map<int, std::vector<File> >::iterator addr;
-  addr=--mChunks.upper_bound(address);
+  addr=mChunks.upper_bound(address);
+  if(addr==mChunks.begin()) return mMemoryUndefined[address];
+  addr--;
   if( address < (addr->first+addr->second.size()) )
   {
     //exists in chunk
@@ -29,6 +31,22 @@ File& Memory::operator[](Data address)
     return mMemoryUndefined[address];
   }
 }
+
+bool Memory::exists(Data address) {
+  //info << "Checking existence of " << address << std::endl;
+  std::map<int, std::vector<File> >::iterator addr;
+  addr=mChunks.upper_bound(address);
+  if(addr==mChunks.begin()) return false;
+  addr--;
+  if( address < (addr->first+addr->second.size()) )
+    return true;
+  else if(mMemoryUndefined.find(address)!=mMemoryUndefined.end())
+    return true;
+  else
+    return false;
+}
+
+
 
 std::vector<File>* Memory::getChunk(Data address)
 {
@@ -106,6 +124,10 @@ void Memory::consoleDump(Data address, int len, int changelistNumber)
 {
   for(int t=0; t<len; t+=4)
   {
+    if(!exists(address+t)) {
+      std::cout << "Memory doesn't exist";
+      break;
+    }
     if(t!=0&&((t%0x10)==0)) printf("\n");
     std::cout << std::hex << std::setfill('0') << std::setw(8) <<
       (*this)[address+t][changelistNumber] << " ";

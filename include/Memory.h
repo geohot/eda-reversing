@@ -24,6 +24,7 @@ public:
   void debugPrint();
   bool loadFile(const char *, Data);        //allocate the memory first
   void consoleDump(Data address, int len, int);
+  bool exists(Data);
   std::vector<File>* getChunk(Data);
 private:
 //allocated memory goes here, since memory is only on one interval, bsearch=interval tree

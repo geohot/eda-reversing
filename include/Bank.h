@@ -20,10 +20,10 @@ public:
   virtual ~Bank();
   void lock();
   void unlock();
-private:
-  std::vector<RegisterFile> RegisterFiles;
   std::vector<RegisterFile>::iterator currentRegisterFile;
   Memory mMem;
+private:
+  std::vector<RegisterFile> RegisterFiles;
   mutexContainer mBankMutex;
 };
 

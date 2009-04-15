@@ -14,8 +14,12 @@
 #include <windows.h>
 
 #include <queue>
+#include <string>
 
 namespace eda {
+
+#define MAIL_NONE 0
+#define MAIL_SERVER 1
 
 class Mail
 {
@@ -24,13 +28,13 @@ public:
   {
 
   }
-  Mail(int lcmd, int lparam)
+  Mail(int lcmd, std::string lparam)
   {
-    mCommand=lcmd;
+    mType=lcmd;
     mParam=lparam;
   }
-  int mCommand;
-  int mParam;
+  int mType;
+  std::string mParam;
 };
 
 class Mailbox
