@@ -8,6 +8,9 @@
 #include <iostream>
 #include <cstring>
 
+#define DATA_PATH "Z:\\EDA\\eda-reversing\\data\\"
+//#define DATA_PATH "D:\\eworkspace\\eda\\Debug\\data\\"
+
 #define Data unsigned int
 
 //define a debug print macro here

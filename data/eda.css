@@ -1,0 +1,179 @@
+html {
+	/*background-color: #dde;*/
+	/*background-color: #E8FAFF;*/
+	/*background-image: url(grad_white.png) height: 100%;*/
+	/*background-color: ;*/
+	/*background: -webkit-gradient(linear, left top, left bottom, from(#00abeb), to(#fff), color-stop(0.5, #fff), color-stop(0.5, #66cc00));*/
+	
+	/*-webkit-transition: background-color .25s linear;*/
+	/*background-color: #E2F8FF;*/
+	overflow: hidden;
+	font: 14px Lucida Console;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+}
+
+.bg {
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0F8FF));
+	/*background-color: #E2F8FF;*/
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	height: 100%;
+	width: 100%;
+	z-index: -4;
+}
+
+.topbar {
+	background-color: #D0D0C0;
+	width: 100%;
+	height: 25px;
+	border-bottom: 1px solid gray;
+	font: 14px Lucida Console;
+	/*padding-left: 8px;*/
+	text-align: center;
+}
+
+.sidebar {
+	background-color: #D0D0C0;
+	width: 150px;
+	height: 100%;
+	border: 1px solid gray;
+	position: fixed;
+	right: 0px;
+}
+
+.welcome {
+	padding: 200px;
+	white-space: nowrap;
+	text-align: center;
+}
+
+.codebox {
+	background-color: white;
+	-webkit-box-shadow: 4px 4px 4px gray;
+	border: 1px solid black;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 4px;
+	padding-right: 4px;
+	margin-left: 20px;
+	color: navy;
+	/*top: 0px;
+	position: absolute;
+	left: 50px;*/
+	width: auto;
+	/*width: 100%;*/
+	/*width: 300px;*/
+	/*max-width: 300px;*/
+	/*max-height: 400px;*/
+	font: 14px Lucida Console;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.level {
+	text-align: center;
+	padding-top: 15px;		/*vertical spacing*/
+	padding-bottom: 15px;
+	white-space: nowrap;
+}
+
+.boringbox {
+	background-color: white;
+	/*-webkit-box-shadow: 4px 4px 4px gray;
+	border: 1px solid black;
+	position: absolute;
+	padding-top: 2px;
+	padding-bottom: 2px;*/
+	padding-left: 5px;
+	padding-right: 5px;
+	color: navy;
+	/*top: 50px;
+	left: 50px;*/
+	width: 300px;
+	/*max-width: 300px;*/
+	/*max-height: 400px;*/
+	font: 14px Lucida Console;
+}
+
+#line_canvas {
+	/*width: 1000px;*/		/*width and height also need to be specified outside this, why?*/
+	/*height: 1000px;*/
+	z-index: -3;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+/*.jingy {
+	-webkit-user-modify: read-write-plaintext-only;
+}*/
+.instruction {
+	width: auto;
+	white-space: nowrap;
+	text-align: left;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+.function {
+
+}
+
+.addr {
+	width: auto;
+	white-space: nowrap;
+	text-align: left;
+	/*padding-top: 5px;*/
+}
+
+.gradwhite {
+	background-color: transparent;
+	/*background-color: red;*/
+	height: 100%;
+	left: 0px;
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	z-index: -2;
+}
+
+.line {
+	position: absolute;
+	/*height: 0px !important;*/
+	/*background-color: red;*/
+}
+.frame {
+	position: absolute;
+	top: 25px;
+	left: 0px;
+	z-index: -1;
+}
+
+.opblock {
+	width: 60px;
+	float: left;		/*what does this do?*/
+}
+
+.opcode {
+	color: navy;
+}
+
+.flag {
+	color: purple;
+}
+
+.register {
+	color: #A03327;
+	/*background-color: yellow;*/
+}
+
+.immed {
+	color: green;
+}

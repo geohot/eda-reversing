@@ -17,11 +17,10 @@ namespace eda {
 class FunctionCache
 {
 public:
-  void add(int start);
+  Function *add(int start);
   //add rename
   Function *inFunction(Data addr);
   void debugPrint();
-private:
   std::map<Data,Function> mStore;
 };
 

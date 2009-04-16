@@ -9,6 +9,7 @@
 
 #include "Core.h"
 #include "Bank.h"
+#include "Function.h"
 
 namespace eda {
 
@@ -18,7 +19,7 @@ class CoreARM : public Core
 public:
   CoreARM(Bank* bank);
   InstructionIterator disassemble(Data);   //should add to instruction cache
-  void fastAnalyse(Data);
+  void fastAnalyse(Data, Function *,bool);
 };
 
 }

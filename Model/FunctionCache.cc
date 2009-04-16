@@ -7,11 +7,11 @@
 using namespace eda;
 
 
-void FunctionCache::add(int start)
+Function *FunctionCache::add(int start)
 {
   std::stringstream name;
   name << std::hex << "sub_" << start;
-  mStore.insert(std::make_pair(start,Function(start, name.str())));
+  return &(mStore.insert(std::make_pair(start,Function(start, name.str()))).first->second);
 }
 
 Function* FunctionCache::inFunction(Data addr)

@@ -32,6 +32,7 @@ public:
   bool mBranch;         //is this a branch instruction
   bool mLinkedBranch;   //is this a call to a subroutine?
   bool mReturn;         //is this a return from a subroutine?
+  bool mLandingPad;     //do local things call this?, set in fastAnalyse
 };
 
 }

@@ -30,6 +30,7 @@ class ParsedInstruction
 {
 public:
   void consolePrint();
+  std::string webPrint(Data);
   void debugPrint();
   void add(std::pair<std::string,int>);
   void add(std::string, int);

@@ -23,6 +23,44 @@ void ParsedInstruction::consolePrint()
   std::cout << std::endl;
 }
 
+/*
+#define DT_OPCODE 0
+#define DT_CONDITION 1
+#define DT_REGISTER 2
+#define DT_IMMED 3
+#define DT_FORMATTING 4
+#define DT_FLAG 5
+#define DT_SYMBOL 6
+#define DT_DECIMAL 7
+#define DT_SUBOPCODE 8
+#define DT_SIGNED 9
+ */
+
+const char divLookup[10][30] = {"opcode", "flag", "register", "immed", "formatting", "flag", "symbol", "immed","subopcode","immed"};
+
+std::string ParsedInstruction::webPrint(Data address)
+{
+  std::stringstream ss;
+  ss << std::hex << "<div class=\"instruction\" id=\"" << address << "\">";
+  ss << "<span class=\"opblock\">";
+  std::vector<std::pair<std::string, int> >::iterator walk=mString.begin();
+  bool endedopblock=false;
+  while(walk!=mString.end())
+  {
+    ss << "<span class=\"" << divLookup[walk->second] << "\">";
+    ss << walk->first;
+    ss << "</span>";
+    if(walk->second==DT_CONDITION) {
+      ss << "</span>";     //end the opblock
+      endedopblock=true;
+    }
+    ++walk;
+  }
+  if(endedopblock==false) ss << "</span>";
+  ss << "</div>" << std::endl;
+  return ss.str();
+}
+
 void ParsedInstruction::debugPrint()
 {
   std::vector<std::pair<std::string, int> >::iterator walk=mString.begin();

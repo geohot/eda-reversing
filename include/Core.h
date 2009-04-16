@@ -6,6 +6,7 @@
 #define EDA_CORE_H_
 #include "Mailbox.h"
 #include "Bank.h"
+#include "Function.h"
 
 namespace eda {
 
@@ -21,7 +22,7 @@ public:
   virtual void update();
   virtual void test();
   virtual InstructionIterator disassemble(Data);
-  virtual void fastAnalyse(Data);
+  virtual void fastAnalyse(Data, Function *, bool);
   void runLoop();
   Mailbox mMail;
 protected:

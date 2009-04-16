@@ -11,8 +11,19 @@
 #endif
 
 #include "macros.h"
+#include <string>
+#include <vector>
+#include <sstream>
 
 namespace eda {
+
+int FrontEndServer::hexstrtoint(std::string in)
+{
+  int ret;
+  std::stringstream ss(in);
+  ss >> std::hex >> ret;
+  return ret;
+}
 
 bool FrontEndServer::serverListen()
 //open the server on port 80
@@ -44,28 +55,35 @@ bool FrontEndServer::serverListen()
 
 }
 
-bool FrontEndServer::serveFile(int fd, const char *name)
+bool FrontEndServer::serveFile(int fd, const char *name, const char *contentType)
 {
-  FILE *f=fopen(name, "rb");
+  //assume it's in the data folder
+  char buf[1024];
+  strcpy(buf, DATA_PATH);
+  strncat(buf, name, 1024-strlen(buf));
+  FILE *f=fopen(buf, "rb");
   if(f==0) {
-    debug << "file not found: " << name << std::endl;
+    debug << "file not found: " << buf << std::endl;
     return false;
   }
-  char buf[1024];
-  serveHeaders(fd);
+  serveHeaders(fd,contentType);
   int l;
   while( (l=fread(buf, 1, 1024, f)) > 0)
   {
     send(fd, buf, l, 0);
   }
-  info << "sent file " << name << std::endl;
+  //info << "sent file " << name << std::endl;
   return true;
 }
 
-void FrontEndServer::serveHeaders(int fd)
+void FrontEndServer::serveHeaders(int fd,const char *contentType)
 {
   char buf[100];
-  strcpy(buf, "HTTP/1.1 200 OK\n\n");
+  strcpy(buf, "HTTP/1.1 200 OK\n");
+  strcat(buf, "Content-Type: ");
+  strcat(buf, contentType);
+  strcat(buf,"\n\n");
+
   send(fd, buf, strlen(buf), 0);
 }
 
@@ -75,18 +93,115 @@ void FrontEndServer::serve(int fd)
 {
   char buf[1024];
   int l=recv(fd, buf, 1024, 0);
+//eventually we'll have to deal with POST
   buf[l]='\0';
-  info << "got: " << std::endl << buf;
+  *strchr(buf, '\n')=0;
 
-  serveHeaders(fd);
+//point to the request URL
+  char *requestURL=strchr(buf, ' ')+1;
+  *strchr(requestURL, ' ')=0;
 
-  strcpy(buf, "<pre>hello world</pre>");
-  send(fd, buf, strlen(buf), 0);
+  info << "request: " << requestURL << std::endl;
 
+  if(strcmp(requestURL,"/test")==0)
+  {
+    serveHeaders(fd,"text/html");
+    strcpy(buf, "<pre>hello world</pre>");
+    send(fd, buf, strlen(buf), 0);
+  }
+  else if(strcmp(requestURL,"/test.xml")==0)
+  {
+    serveHeaders(fd, "application/xml");
+    send(fd, XML_HEADER, strlen(XML_HEADER), 0);
+    send(fd, "<top><test>hello</test></top>", strlen("<top><test>hello</test></top>"), 0);
+  }
+  else if(strcmp(requestURL,"/")==0) serveFile(fd,"eda_template.html","text/html");
+  else if(strcmp(requestURL,"/favicon.ico")==0) serveFile(fd,"favicon.ico","image/x-icon");
+  else if(strcmp(requestURL,"/eda.css")==0) serveFile(fd,"eda.css","text/css");
+  else if(strcmp(requestURL,"/eda.js")==0) serveFile(fd,"eda.js","application/x-javascript");
+  else if(!lexer(fd,requestURL)) info << "unhandled URL" << std::endl;
+}
+
+#define sendString(x,y) send(x, y, strlen(y), 0)
+
+bool FrontEndServer::lexer(int fd,std::string cmd)
+{
+  std::vector<std::string> argv;
+  size_t start=cmd.find_first_not_of("/",0);
+  size_t end=cmd.find_first_of("/", start);
+  while(end!=std::string::npos || start!=std::string::npos)
+  {
+    argv.push_back(cmd.substr(start,end-start));
+    start=cmd.find_first_not_of("/",end);
+    end=cmd.find_first_of("/", start);
+  }
+  /*info << "lexed " << argv.size() << std::endl;
+  for(int a=0;a<argv.size();a++) info << "[" << a << "] " << argv[a] << std::endl;*/
+  if(argv[0]=="Bank" && argv.size()>=2) {
+    mBank->lock(LOCKED_SERVER);
+    if(argv[1]=="getFunctionList") {
+      serveHeaders(fd, "application/xml");
+      std::stringstream response;
+      response << XML_HEADER << "<top>" << std::endl;
+
+      FunctionIterator walk=mBank->mFunctionCache.mStore.begin();
+      while(walk!=mBank->mFunctionCache.mStore.end()) {
+        response << std::hex << "<function address=\""
+          << walk->first << "\">" << walk->second.mName << "</function>" << std::endl;
+        ++walk;
+      }
+
+      response << "</top>" << std::endl;
+      sendString(fd, response.str().c_str());
+    }
+    else if(argv[1]=="getFunction" && argv.size()>=3)
+    {
+      serveHeaders(fd, "application/xml");
+      std::stringstream response;
+      //response << XML_HEADER << "<top><instructiondata>" << std::endl;
+
+      Function *f=mBank->mFunctionCache.inFunction(hexstrtoint(argv[2]));
+      std::map<Data,Instruction *>::iterator walk=f->mInstructions.begin();
+      response << "<div class=\"codebox\">" << std::endl;
+      while(walk!=f->mInstructions.end()) {
+        if(walk->second->mLandingPad==true)
+          response << "</div><div class=\"codebox\">" << std::endl;
+        response << walk->second->mString.webPrint(walk->first);
+        ++walk;
+      }
+      response << "</div>";
+      /*response << "</instructiondata>" << std::endl;
+      response << "</top>" << std::endl;*/
+      sendString(fd, response.str().c_str());
+    }
+    else if(argv[1]=="getFunctionBranchData" && argv.size()>=3) {
+      serveHeaders(fd, "application/xml");
+      std::stringstream response;
+      response << XML_HEADER << "<top>" << std::endl;
+
+      Function *f=mBank->mFunctionCache.inFunction(hexstrtoint(argv[2]));
+      std::vector<Branch>::iterator walk=f->mBranchData.begin();
+      while(walk!=f->mBranchData.end()) {
+        response << (*walk).getXML() << std::endl;
+        ++walk;
+      }
+      response << "</top>" << std::endl;
+      sendString(fd, response.str().c_str());
+    }
+
+    mBank->unlock(LOCKED_SERVER);
+  }
+
+  return true;
 }
 
 void FrontEndServer::runLoop()
 {
+  mBank->lock(LOCKED_SERVER);
+  mBank->mem()->loadFile("bootrom",0x400000);
+  mBank->unlock(LOCKED_SERVER);
+  mCore->sendMail(Mail(CORE_ANALYSE,0x400054));
+
   if(!serverListen()) { delete this; return; }  //works?
   else info << "server started" << std::endl;
 

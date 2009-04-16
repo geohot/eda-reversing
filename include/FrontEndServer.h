@@ -8,6 +8,10 @@
 #include "FrontEnd.h"
 #include "macros.h"
 
+#include <string>
+
+#define XML_HEADER "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+
 namespace eda
 {
 
@@ -16,11 +20,13 @@ class FrontEndServer : public FrontEnd
 public:
   FrontEndServer(Bank *bank) : FrontEnd(bank) {}
 private:
+  int hexstrtoint(std::string);
+  bool lexer(int,std::string);
   bool serverListen();
   void runLoop();
   void serve(int);
-  void serveHeaders(int);
-  bool serveFile(int, const char*);
+  void serveHeaders(int, const char *);
+  bool serveFile(int, const char*, const char *);
   int mSocket;
 };
 

@@ -33,7 +33,7 @@ InstructionIterator Core::disassemble(Data addr)
   return 0;
 }
 
-void Core::fastAnalyse(Data addr)
+void Core::fastAnalyse(Data addr, Function *fxn, bool crap)
 {
   info << "I am a generic Core, I can't fastAnalyse" << endl;
   return;
@@ -56,7 +56,9 @@ void Core::runLoop()
       //lexer(event);
     }
     else if(event.mCommand==CORE_ANALYSE)
-      fastAnalyse((Data)event.mParam);
+    {
+      fastAnalyse((Data)event.mParam, mBank->mFunctionCache.add((Data)event.mParam), false);
+    }
     //info << "i've got mail: " << event.mParam << endl;
   }
 }

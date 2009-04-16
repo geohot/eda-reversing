@@ -16,8 +16,11 @@ InstructionARM::InstructionARM(Data opcode)
   mConditional=!(((i->generic.cond)==0xE) || ((i->generic.cond)==0xF));        //always run
   mBranch=false;
   mReturn=false;
-  if(!init())
-    mString << "UNDEFINED: " << encodingsARM[getEncodingARM(mOpcode)];
+  if(!init()) {
+    mString.add("XXX", DT_OPCODE);
+    mString << conditionsARM(i->generic.cond) << " ";
+    mString << encodingsARM[getEncodingARM(mOpcode)];
+  }
 }
 
 bool InstructionARM::init()
@@ -77,6 +80,9 @@ bool InstructionARM::initDataProcessing()
   else if(mEncodingARM==ARM_DPIS)           //Data processing immediate shift
     //R3 LSL 4
   {
+    if(i->generic.Rd==REG_PC && i->dpis.Rm==REG_LR && i->dpis.opcode==OPCODE_MOV)
+        mReturn=true;       //MOV PC, LR is return
+
     mString << registersARM(i->dpis.Rm);
     if(i->dpis.shift_imm!=0 || i->dpis.shift!=0)        //this shift is real
     {

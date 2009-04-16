@@ -26,10 +26,11 @@ InstructionIterator CoreARM::disassemble(Data addr)
 }
 
 //can probably eventually migrate to core
-void CoreARM::fastAnalyse(Data addr)
+void CoreARM::fastAnalyse(Data addr, Function *currentFunction, bool first)
 //recursive fast analyser, be careful here
 {
   mBank->lock(LOCKED_CORE);
+
   info << "analysing " << std::hex << addr << std::endl;
   InstructionIterator working;
   do
@@ -41,8 +42,16 @@ void CoreARM::fastAnalyse(Data addr)
       goto done;
     }
     working=disassemble(addr);
+    if(first==true) {    //mark as landingPad
+      working->second.mLandingPad=true;
+      first=false;
+    }
+    currentFunction->mInstructions.insert(std::make_pair(addr, &(working->second)));
     if(working->second.mReturn==true)
     {
+      /*s << std::hex << "<code type=\"end\">" << addr << "</code>";
+      currentFunction->mBranchData.push_back(s.str()); s.str("");*/
+
       info << "function return at: " << addr << std::endl;
       goto done;
     }
@@ -55,18 +64,27 @@ void CoreARM::fastAnalyse(Data addr)
   {
     if(mBank->mInstructionCache.find(addr+4)==mBank->mInstructionCache.end()) {
       //not in icache already
-      fastAnalyse(addr+4);       //recurse..weeeee
+      currentFunction->mBranchData.push_back(Branch(BRANCH_CONDITIONFAIL, addr, addr+4));
+      fastAnalyse(addr+4, currentFunction, true);       //recurse..weeeee
     }
   }
   //for normal branches + conditionals
   if(mBank->mInstructionCache.find(a)==mBank->mInstructionCache.end()) {
     //not in icache already
-    fastAnalyse(a);       //recurse..weeeee
-  }
-  //if linked, add it to the function cache
-  if(working->second.mLinkedBranch==true) {
-    info << "function found at: " << a << std::endl;
-    mBank->mFunctionCache.add(a);
+    //if linked, add it to the function cache
+    if(working->second.mLinkedBranch==true) {
+      fastAnalyse(addr+4, currentFunction, false);     //continue here, since it'll be back
+      info << "function found at: " << a << std::endl;
+      fastAnalyse(a, mBank->mFunctionCache.add(a), false);     //and do the new function
+    }
+    else
+    {
+      if(working->second.mConditional)
+        currentFunction->mBranchData.push_back(Branch(BRANCH_CONDITIONPASS, addr, a));
+      else
+        currentFunction->mBranchData.push_back(Branch(BRANCH_FOLLOW, addr, a));
+      fastAnalyse(a, currentFunction, true);
+    }
   }
 done:
   mBank->unlock(LOCKED_CORE);
