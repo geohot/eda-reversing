@@ -12,7 +12,7 @@ window.addEventListener('load', function(e) {
   document.getElementById('functionlist').onmousedown=function(){return false};
 
   refreshFunctionList();
-  refreshFunction("4010ec");
+  //refreshFunction("4010ec");
 }, false);
 
 //*****************************************************************************
@@ -62,6 +62,7 @@ function refreshFunction(address)
 //nested to allow drag everywhere
   bigdiv=document.createElement("div");
   bigdiv.innerHTML=req.responseText;
+  //alert(bigdiv.innerHTML);
 
   //document.getElementById("mega").appendChild(field);
 
@@ -87,7 +88,7 @@ function refreshFunctionList()
 {
   req = new XMLHttpRequest()
   req.open("GET", "Bank/getFunctionList", true);
-  req.send();
+  req.send("");
   req.onreadystatechange = function(){
   if (req.readyState == 4) {
 //*****Got Response*****
@@ -175,20 +176,21 @@ function drawGraph(data, topBox, divlist)
   lines = new Array();  //memory is cheap
   segments = new Array(); //segments[end]=start;
 
-  //alert(divlist.length);
-
   for(a=0;a<divlist.length;a++) {
-    nodes[divlist[a].childNodes[1].id]={ 
-      box: divlist[a],
-      level: null, 
-      parents: new Array(),   //from parents
-      parenttypes: new Array(),
-      children: new Array(),  //to children
-      lineage: new Array(),
-      widthx: 0, 
-      centerx: 0,
-      xweight: 0};
-    segments[divlist[a].lastChild.previousSibling.id]=divlist[a].childNodes[1].id;
+    if(divlist[a].nodeType==1)
+    {
+      nodes[divlist[a].childNodes[1].id]={ 
+        box: divlist[a],
+        level: null, 
+        parents: new Array(),   //from parents
+        parenttypes: new Array(),
+        children: new Array(),  //to children
+        lineage: new Array(),
+        widthx: 0, 
+        centerx: 0,
+        xweight: 0};
+      segments[divlist[a].lastChild.previousSibling.id]=divlist[a].childNodes[1].id;
+    }
   }
 
   nodes[topBox].level=0;

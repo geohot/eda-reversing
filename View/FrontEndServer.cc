@@ -168,19 +168,20 @@ bool FrontEndServer::lexer(int fd,std::string cmd)
     else if(argv[1]=="getFunction" && argv.size()>=3)
     {
       serveHeaders(fd, "application/xml");
+
       std::stringstream response;
       //response << XML_HEADER << "<top><instructiondata>" << std::endl;
 
       Function *f=mBank->mFunctionCache.inFunction(hexstrtoint(argv[2]));
       std::map<Data,Instruction *>::iterator walk=f->mInstructions.begin();
-      response << "<div class=\"codebox\">" << std::endl;
+      response << "<html><div class=\"codebox\">" << std::endl;
       while(walk!=f->mInstructions.end()) {
         if(walk->second->mLandingPad==true)
-          response << "</div><div class=\"codebox\">" << std::endl;
+          response << "</div>" << std::endl << "<div class=\"codebox\">" << std::endl;
         response << walk->second->mString.webPrint(walk->first);
         ++walk;
       }
-      response << "</div>";
+      response << "</div></html>";
       /*response << "</instructiondata>" << std::endl;
       response << "</top>" << std::endl;*/
       sendString(fd, response.str().c_str());
@@ -196,7 +197,7 @@ bool FrontEndServer::lexer(int fd,std::string cmd)
         response << (*walk).getXML() << std::endl;
         ++walk;
       }
-      response << "</top>" << std::endl;
+      response << "</top>";
       sendString(fd, response.str().c_str());
     }
 
