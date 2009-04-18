@@ -4,7 +4,7 @@
 
 #include "FrontEnd.h"
 #include "macros.h"
-#include "bank.h"
+#include "Bank.h"
 
 #include <iostream>
 #include <string>

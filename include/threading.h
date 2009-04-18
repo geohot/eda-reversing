@@ -45,7 +45,7 @@ int ExitThread(int);*/
 #include <pthread.h>
 
 #define threadContainer pthread_t
-#define threadCreate(y,x,z) pthread_create(y,0,x,(void *)z)
+#define threadCreate(y,x,z) pthread_create(y,0,(void* (*)(void*))x,(void *)z)
 #define threadDestroy(y) pthread_cancel(*y);
 #define threadExit() pthread_exit(0)
 #define threadWait(y) pthread_join(*y)

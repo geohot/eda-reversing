@@ -4,10 +4,21 @@
 
 #include "FrontEndServer.h"
 
-//Windows only for now
-#ifdef WIN32
+
+#ifdef WIN32            //Windows sockets
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
+#define SHUT_RDWR SD_SEND
+#define socklen_t int
+
+#else                   //Linux sockets
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/wait.h>
+#include <signal.h>
+
 #endif
 
 #include "macros.h"
@@ -209,16 +220,19 @@ void FrontEndServer::runLoop()
 //this server will be blocking for easiness
   while(1)
   {
-    int clientSocket, sin_size=sizeof(cli_addr);
+    int clientSocket;
+    socklen_t sin_size=sizeof(cli_addr);
 
     if ((clientSocket = accept(mSocket, (struct sockaddr *)&cli_addr, &sin_size)) == -1) {
       debug << "accept failed" << std::endl;
     }
 
+
     //if this were threaded, a new thread would go here
     serve(clientSocket); //do shit
 
-    shutdown(clientSocket, SD_SEND);
+    //shutdown(clientSocket, SD_SEND);
+    shutdown(clientSocket, SHUT_RDWR);
   }
 }
 

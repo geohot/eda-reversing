@@ -30,7 +30,7 @@ Core::~Core() {
 InstructionIterator Core::disassemble(Data addr)
 {
   info << "I am a generic Core, I can't disassemble" << endl;
-  return 0;
+  return InstructionIterator();
 }
 
 void Core::fastAnalyse(Data addr, Function *fxn, bool crap)

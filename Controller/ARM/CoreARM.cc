@@ -29,16 +29,17 @@ InstructionIterator CoreARM::disassemble(Data addr)
 void CoreARM::fastAnalyse(Data addr, Function *currentFunction, bool first)
 //recursive fast analyser, be careful here
 {
+  Data a;
   mBank->lock(LOCKED_CORE);
 
-  info << "analysing " << std::hex << addr << std::endl;
+  //info << "analysing " << std::hex << addr << std::endl;
   InstructionIterator working;
   do
   {
     //info << "  disassembling" << addr << std::endl;
     if(!(mBank->mem()->exists(addr)))
     {
-      info << "memory isn't real: " << addr << std::endl;
+      //info << "memory isn't real: " << addr << std::endl;
       goto done;
     }
     working=disassemble(addr);
@@ -52,14 +53,14 @@ void CoreARM::fastAnalyse(Data addr, Function *currentFunction, bool first)
       /*s << std::hex << "<code type=\"end\">" << addr << "</code>";
       currentFunction->mBranchData.push_back(s.str()); s.str("");*/
 
-      info << "function return at: " << addr << std::endl;
+      //info << "function return at: " << addr << std::endl;
       goto done;
     }
     addr+=4;    //needs to be param
   } while(working->second.mBranch==false);
   addr-=4;
-  Data a=working->second.mAction.resolveToRegisterWithRegister(15, addr+8);
-  info << std::hex << "found next branch at " << addr << " to " << a << std::endl;
+  a=working->second.mAction.resolveToRegisterWithRegister(15, addr+8);
+  //info << std::hex << "found next branch at " << addr << " to " << a << std::endl;
   if(working->second.mConditional)      //if conditional, continue here as well
   {
     if(mBank->mInstructionCache.find(addr+4)==mBank->mInstructionCache.end()) {
@@ -74,7 +75,7 @@ void CoreARM::fastAnalyse(Data addr, Function *currentFunction, bool first)
     //if linked, add it to the function cache
     if(working->second.mLinkedBranch==true) {
       fastAnalyse(addr+4, currentFunction, false);     //continue here, since it'll be back
-      info << "function found at: " << a << std::endl;
+      //info << "function found at: " << a << std::endl;
       fastAnalyse(a, mBank->mFunctionCache.add(a), false);     //and do the new function
     }
     else
