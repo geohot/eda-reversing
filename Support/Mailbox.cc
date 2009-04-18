@@ -10,42 +10,42 @@ using namespace eda;
 
 Mailbox::Mailbox()
 {
-  InitializeCriticalSection(&mMutex);
-  mOMGMail=CreateEvent(0,true,false,0);
+  mutexInit(&mMutex);
+  eventInit(&mOMGMail);
 }
 
 Mailbox::~Mailbox()
 {
-  DeleteCriticalSection(&mMutex);
-  CloseHandle(mOMGMail);
+  mutexDestroy(&mMutex);
+  eventDestroy(&mOMGMail);
 }
 
 //call from anywhere
 void Mailbox::sendMail(Mail themail)
 {
-  EnterCriticalSection(&mMutex);
+  mutexLock(&mMutex);
   mPostOffice.push(themail);
-  SetEvent(mOMGMail);   //you've got mail
-  LeaveCriticalSection(&mMutex);
+  eventSet(&mOMGMail);   //you've got mail
+  mutexUnlock(&mMutex);
 }
 
 Mail Mailbox::checkMailbox()
 {
-  if(WaitForSingleObject(mOMGMail, 0)==0)       //OMGMail is yes
+  Mail ret;
+  mutexLock(&mMutex);
+  if(mPostOffice.size()==0) ret=Mail(0,0);
+  else
   {
-    EnterCriticalSection(&mMutex);
-    Mail ret=mPostOffice.front();
-    //info << "got mail: " << ret.mCommand << std::endl;
+    ret=mPostOffice.front();
     mPostOffice.pop();
-    if(mPostOffice.size()==0) ResetEvent(mOMGMail);
-    LeaveCriticalSection(&mMutex);
-    return ret;
+    if(mPostOffice.size()==0) eventReset(&mOMGMail);
   }
-  return Mail(0,0);        //ugliness
+  mutexUnlock(&mMutex);
+  return ret;
 }
 
 Mail Mailbox::waitForMail()
 {
-  WaitForSingleObject(mOMGMail, INFINITE);
+  eventWaitFor(&mOMGMail);
   return checkMailbox();
 }

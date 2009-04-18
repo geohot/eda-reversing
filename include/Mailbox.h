@@ -5,13 +5,11 @@
 #ifndef EDA_MAILBOX_H_
 #define EDA_MAILBOX_H_
 
-//this is windows only, because i'm lazy
-//shouldn't be hard to move to linux
+//shoudl be cross platform
 
 //Mailbox is threadsafe
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <threading.h>
 
 #include <queue>
 #include <string>
@@ -47,8 +45,8 @@ public:
   Mail checkMailbox();   //NULL is no mail, else mail. i love mail
 private:
   std::queue<Mail> mPostOffice;  //we only mail Mails, strings cost more
-  CRITICAL_SECTION mMutex;
-  HANDLE mOMGMail;
+  mutexContainer mMutex;
+  eventContainer mOMGMail;
 };
 
 }

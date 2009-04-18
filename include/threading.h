@@ -31,6 +31,15 @@ int ExitThread(int);*/
 #define mutexTryLock(x) TryEnterCriticalSection(x)
 #define mutexUnlock(x) LeaveCriticalSection(x)
 
+#define eventContainer HANDLE
+#define eventInit(x) (*x)=CreateEvent(0,true,false,0)
+#define eventDestroy(x) CloseHandle(*x)
+#define eventSet(x) SetEvent(*x)
+#define eventReset(x) ResetEvent(*x)
+#define eventWaitFor(x) WaitForSingleObject(*x, INFINITE)
+#define eventIsSet(x) WaitForSingleObject(*x, 0)
+
+
 #else
 //pthreads
 #include <pthread.h>
@@ -47,6 +56,15 @@ int ExitThread(int);*/
 #define mutexLock(x) pthread_mutex_lock(x)
 #define mutexTryLock(x) pthread_mutex_trylock(x)
 #define mutexUnlock(x) pthread_mutex_unlock(x)
+
+//very hacky event code
+#define eventContainer mutexContainer
+#define eventInit(x) mutexInit(x); mutexLock(x)
+#define eventDestroy(x) mutexDestroy(x)
+#define eventSet(x) mutexUnlock(x)
+#define eventWaitFor(x) mutexLock(x); mutexUnlock(x)
+#define eventIsSet(x) mutexTryLock(x); mutexUnlock(x)
+#define eventReset(x) mutexLock(x)
 
 #endif
 
