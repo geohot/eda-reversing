@@ -234,13 +234,14 @@ fail:
 void FrontEndServer::runLoop()
 {
   mBank->lock(LOCKED_SERVER);
-  //mBank->mem()->loadFile("bootrom",0x400000);
-  //mBank->mem()->importIDC("bootrom.idc");
+  mBank->mem()->loadFile("bootrom",0x400000);
+  mBank->mem()->importIDC("bootrom.idc");
   mBank->mem()->loadFile("eda_test.bin",0);
 
   mBank->unlock(LOCKED_SERVER);
-  //mCore->sendMail(Mail(CORE_ANALYSE,0x400054));
   mCore->sendMail(Mail(CORE_ANALYSE,0));
+  mCore->sendMail(Mail(CORE_ANALYSE,0x400054));
+
 
   if(!serverListen()) { delete this; return; }  //works?
   else info << "server started" << std::endl;

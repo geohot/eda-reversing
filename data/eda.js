@@ -198,7 +198,7 @@ function refreshFunction(address)
   reqBD.onreadystatechange = function(){
   if (reqBD.readyState == 4) {
 //*****Got Response*****
-  drawGraph(reqBD.responseXML.documentElement.childNodes, bigdiv.childNodes);
+  graphDraw(reqBD.responseXML.documentElement.childNodes, bigdiv.childNodes);
 //******Cleanup******
   }
   }
@@ -334,83 +334,183 @@ window.addEventListener('mouseup', function(e) {
 //*****************************************************************************
 
 //place the codeboxes and draw the lines
-function drawGraph(data, divlist)
+
+
+function graphDraw(data, divlist)
 {
   //get all the boxes on the field
-  nodes = new Array();
-  levels = new Array();
-  lines = new Array();  //memory is cheap
-  segments = new Array(); //segments[end]=start;
-
+  var nodes = new Array();
+  var lines = new Array();  //memory is cheap
+  var segments = new Array(); //segments[end]=start;
+ 
   firstaddr=-1;
-
+ 
   for(a=0;a<divlist.length;a++) {
     if(divlist[a].nodeType==1)
     {
+      //alert("got node at: "+divlist[a].childNodes[3].id);
       if(firstaddr==-1) firstaddr=divlist[a].childNodes[3].id;
       nodes[divlist[a].childNodes[3].id]={ 
         box: divlist[a],
         level: null, 
         parents: new Array(),   //from parents
-        parenttypes: new Array(),
         children: new Array(),  //to children
         lineage: new Array(),
-        widthx: 0, 
-        centerx: 0,
+        xwidth: 0, 
+        xcenter: 0,
         xweight: 0};
       segments[divlist[a].lastChild.previousSibling.id]=divlist[a].childNodes[3].id;
     }
   }
-
-  /*for(s in segments)
-    alert("segment["+s+"]="+segments[s]);*/
-
-  nodes[firstaddr].level=0;
-  //levels[0]=new Array();
-  //levels[0].push(firstaddr);
-
+ 
   for(a=0;a<data.length;a++)
   {
     m=data[a].attributes;
     if(m)
     {
       //[0] is color, [1] is to, [2] is from
-      //node[segments[m[2].value]].box.style.backgroundColor="yellow";
       if(nodes[segments[m[2].value]]==null) alert(m[2].value + "  "+segments[m[2].value]);
       nodes[segments[m[2].value]].children.push(m[1].value);
       if(nodes[m[1].value]==null) alert(m[1].value);
       nodes[m[1].value].parents.push(segments[m[2].value]);
+
       lines.push({to: m[1].value, from: segments[m[2].value], color: m[0].value});
     }
   }
+//do initial traverse, build edges
+  graphRemoveLoops(nodes,firstaddr);
 
+//place all childless nodes in bottom level
+  var inLevel = new Array();
+  for(a in nodes)
+  {
+    if(nodes[a].children.length==0)
+    {
+      nodes[a].level=0;
+      inLevel.push(a);
+    }
+  }
 //do Y placement
-  maxLevel=0;
-  doYPlacement(nodes, nodes[firstaddr],0);
-//X placement is implied for now
+
+//should insert fake nodes for routing
+  doYPlacement(nodes, 0,inLevel);
+
+//create level array
+  var level = new Array();
+  
+  for(a in nodes)
+  {
+    //alert(nodes[a].level);
+    if(level[nodes[a].level]==null)
+    {
+      /*level[nodes[a].level]=document.createElement("div");
+      level[nodes[a].level].className="level";
+      level[nodes[a].level].id="L_"+nodes[a].level;*/
+      level[nodes[a].level]=new Array();
+    }
+    //level[nodes[a].level].appendChild(nodes[a].box);
+    level[nodes[a].level].push(a);
+  }
+  if(level[null]!=null)
+  {
+    level[null].style.backgroundColor="red";
+    field.appendChild(level[null]);
+  }
+
+//sort levels, ghetto crossing minimization
+  var levelsSorted = new Array();
+  for(a=0;a<level.length;a++)
+  {
+    levelsSorted[a]=level[a].sort();
+  }
+
+  //alert("sorted: "+levelsSorted.length);
+
 
 //clear the field
   field=document.getElementById("mega");
   field.innerHTML="<canvas id=\"line_canvas\" width=\"3000px\" height=\"3000px\"></canvas>";
-//place the div boxes
-  for(a=0;a<=maxLevel;a++)
+//draw the levels
+  //levels start minus
+  var levelDiv = new Array();
+  for(a=(levelsSorted.length-1);a>=0;a--)
   {
-    thislevel=document.createElement("div");
-    thislevel.className="level";
-    for(nodename in nodes)
+    if(levelsSorted[a]==null) alert("level "+a+" not found");
+    else
     {
-      if(nodes[nodename].level==a)
-        thislevel.appendChild(nodes[nodename].box);
+      levelDiv[a]=document.createElement("div");
+      levelDiv[a].className="level";
+      levelDiv[a].id="L_"+a;
+      for(n=0;n<levelsSorted[a].length;n++)
+      {
+        //alert(levelsSorted[a][n]);
+        levelDiv[a].appendChild(nodes[levelsSorted[a][n]].box);
+      }
+      field.appendChild(levelDiv[a]);
     }
-    field.appendChild(thislevel);
   }
 
+//X placement here
+
+//populate node xwidths
+  for(a in nodes)
+  {
+    nodes[a].xwidth=nodes[a].box.offsetWidth; //since boxes are placed
+  }
+//place bottom node(s)
+  for(a in levelsSorted[0])
+  {
+    nodes[levelsSorted[0][a]].xcenter=500;
+    nodes[levelsSorted[0][a]].xweight=1;
+  }
+
+//place higher up nodes
+//for each level
+  for(a=1;a<level.length;a++)
+  {
+    //for each node in that level
+    for(b=0;b<levelsSorted[a].length;b++)
+    {
+      //get average of all children of b placements
+      var averageXCenter=0, averageXCount=0;
+      for(c in nodes[levelsSorted[a][b]].children)
+      {
+        averageXCenter+=nodes[nodes[levelsSorted[a][b]].children[c]].xcenter;
+        averageXCount++;
+      }
+      averageXCenter/=averageXCount;
+
+      //alert("node "+levelsSorted[a][b]+" wants to be placed at "+averageXCenter);
+
+      //my ideal placement is averageXCenter
+      nodes[levelsSorted[a][b]].xcenter=averageXCenter;
+
+      //but others have a say too
+      //alert("a,b "+a+" "+b);
+
+      for(c=(b-1);c>=0;c--)
+      {
+        //if(c==-1) break;
+        //alert("c" + c);
+        //if left edge less than last right edge
+        var leftedge_this=(nodes[levelsSorted[a][c+1]].xcenter-((nodes[levelsSorted[a][c+1]].xwidth)/2));
+        var rightedge_last=(nodes[levelsSorted[a][c]].xcenter+((nodes[levelsSorted[a][c]].xwidth)/2));
+        //alert(leftedge_this+" "+rightedge_last);
+        if( leftedge_this < rightedge_last )
+        {
+          nodes[levelsSorted[a][c+1]].xcenter+=(rightedge_last-leftedge_this)+20;
+        }
+      }
+    }
+    
+//    alert(" ");
+  }
+
+  graphRenderX(nodes, levelsSorted);
+
+
+ 
 //draw the lines
-  /*for(a in nodes) {
-    nodes[a].widthx=nodes[a].box.offsetWidth;
-    nodes[a].centerx=nodes[a].box.offsetLeft+(nodes[a].box.offsetWidth)/2;
-    drawline(nodes[a].centerx, nodes[a].box.offsetTop, 0, -200);
-  }*/
   for(a in lines)
   {
     routeLine(
@@ -422,6 +522,27 @@ function drawGraph(data, divlist)
   }
 }
 
+function graphRenderX(nodes, levelsSorted)
+{
+//apply xcenters on field, hack uses marginLeft
+  for(a=0;a<levelsSorted.length;a++)
+  {
+    for(b=0;b<levelsSorted[a].length;b++)
+    {
+      var calcpad;
+      if(b==0)
+        calcpad=nodes[levelsSorted[a][b]].xcenter-((nodes[levelsSorted[a][b]].xwidth)/2);
+      else
+      {
+        //alert(nodes[levelsSorted[a][b-1]].box.offsetLeft+nodes[levelsSorted[a][b-1]].box.offsetWidth);
+        calcpad=nodes[levelsSorted[a][b]].xcenter-((nodes[levelsSorted[a][b]].xwidth)/2)-(nodes[levelsSorted[a][b-1]].box.offsetLeft+nodes[levelsSorted[a][b-1]].box.offsetWidth);
+      }
+      nodes[levelsSorted[a][b]].box.style.marginLeft=calcpad+"px";
+    }
+  }
+}
+
+ 
 function routeLine(sx, sy, ex, ey, c)  //start has the arrow
 {
   var line=new Array();
@@ -432,16 +553,76 @@ function routeLine(sx, sy, ex, ey, c)  //start has the arrow
   //alert(sx + ", " +sy + " - " + ex + ", " + ey);
   drawlinearray(line, c);
 }
-
-var maxLevel;
-function doYPlacement(nodes,thisnode,level)
+ 
+function graphRemoveLoops(nodes, thisnodeindex)
 {
-  if(level>maxLevel) maxLevel=level;
-  for(a in thisnode.children)
+  //iterate through all children
+  for(a in nodes[thisnodeindex].children)
   {
-    nodes[thisnode.children[a]].level=level+1;
-    doYPlacement(nodes, nodes[thisnode.children[a]], level+1);
+    var runChild=true;
+    for(l in nodes[thisnodeindex].lineage)  //search my lineage for this children
+    {
+      if(nodes[thisnodeindex].lineage[l]==nodes[thisnodeindex].children[a])
+      {
+        runChild=false;
+        break;
+      }    
+    }
+    if(runChild==false)
+    {
+      //my child was found in my lineage, we have a problem
+
+      var it=nodes[nodes[thisnodeindex].children[a]];
+      var it_nodeindex=nodes[thisnodeindex].children[a];
+
+      for(c in it.parents)
+        //i'm not it's parent anymore
+      {
+        if(it.parents[c] == thisnodeindex)
+        {
+          it.parents.splice(c,1);
+          break;
+        }
+      }
+      nodes[thisnodeindex].children.splice(a,1);  //and it's not my child anymore
+
+      //insert the other way
+      nodes[thisnodeindex].parents.splice(0,0,it_nodeindex); //it's actually my parent
+      it.children.splice(0,0,thisnodeindex);          //and i am it's child
+
+    }
+    else
+    {
+      nodes[nodes[thisnodeindex].children[a]].lineage=nodes[thisnodeindex].lineage.concat(
+        nodes[nodes[thisnodeindex].children[a]].lineage, thisnodeindex);
+      graphRemoveLoops(nodes, nodes[thisnodeindex].children[a]);
+    }
   }
+}
+
+function doYPlacement(nodes,level,inLevel)
+//i guess it's not really recursive
+{
+  if(level>50)
+  {
+    alert("WTF");
+    return;
+  }
+//  alert("placing level: "+level);
+//build set of node indexes in level
+  var inLevelnext = new Array();
+//for all nodes in this level
+  for(a in inLevel)
+  {
+    //place all nodes parents in the next level
+    for(p in nodes[inLevel[a]].parents)
+    {
+      nodes[nodes[inLevel[a]].parents[p]].level=level+1;
+      inLevelnext.push(nodes[inLevel[a]].parents[p]);
+    }
+  }
+  if(inLevelnext.length>0)
+    doYPlacement(nodes, level+1, inLevelnext);
 }
 
 
