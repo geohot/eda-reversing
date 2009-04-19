@@ -30,8 +30,10 @@ public:
   void consoleDump(Data address, int len, int);
   bool exists(Data);
   std::string getName(Data address);
+  bool isNameSet(Data address);
   void setName(Data address, std::string name);
-  Data lookupName(std::string name);
+  bool lookupName(std::string name, Data *address);
+  bool importIDC(const char *);
   std::vector<File>* getChunk(Data);
   Function* inFunction(Data addr);
   Function* addFunction(int start);

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <fstream>
 
 using namespace eda;
 
@@ -44,17 +45,26 @@ std::string Memory::getName(Data address)
   }
 }
 
+bool Memory::isNameSet(Data address)
+{
+  return (mNames.find(address)!=mNames.end());
+}
+
 void Memory::setName(Data address, std::string name)
 {
   std::map<Data, std::string>::iterator nameiter=mNames.find(address);
   if(nameiter!=mNames.end()) mReverseNames.erase(nameiter->second);
+  mNames.erase(address);
   mNames.insert(std::make_pair(address, name));         //does insert overwrite?
   mReverseNames.insert(std::make_pair(name, address));
 }
 
-Data Memory::lookupName(std::string name)
+bool Memory::lookupName(std::string name, Data *address)
 {
-  return mReverseNames.find(name)->second;
+  std::map<std::string, Data>::iterator nameiter=mReverseNames.find(name);
+  if(nameiter==mReverseNames.end()) return false;
+  *address=nameiter->second;
+  return true;
 }
 
 bool Memory::exists(Data address) {
@@ -92,6 +102,26 @@ bool Memory::allocate(Data address, int len)
   std::vector<File> *region = new std::vector<File>;
   region->resize(len);
   mChunks.insert(std::make_pair(address,*region));
+  return true;
+}
+
+bool Memory::importIDC(const char *filename)
+{
+  char line[256];
+  std::ifstream fin(filename);
+  while(fin.good())
+  {
+    fin.getline(line, 256);
+    if(memcmp(line, "\tMakeName\t",10)==0) {
+      char *addr=(strchr(line, 'X')+1);
+      char *name=(strchr(line, '"')+1);
+      (*strchr(addr,','))='\0';
+      (*strchr(name,'"'))='\0';
+      Data daddr=strtoul(addr,NULL,16);
+      info << "set name of " << daddr << " to " << name << std::endl;
+      setName(daddr, name);
+    }
+  }
   return true;
 }
 
@@ -186,9 +216,11 @@ int Memory::fileSize(FILE *f)
 //deal with functions in Memory
 Function *Memory::addFunction(int start)
 {
-  std::stringstream name;
-  name << std::hex << "sub_" << start;
-  setName(start, name.str()); //name the function in the memory space
+  if(!isNameSet(start)) {
+    std::stringstream name;
+    name << std::hex << "sub_" << start;
+    setName(start, name.str()); //name the function in the memory space
+  }
   return &(mFunctionStore.insert(std::make_pair(start,Function(start))).first->second);
 }
 

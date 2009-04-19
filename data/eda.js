@@ -6,6 +6,8 @@ window.addEventListener('load', function(e) {
   window.addEventListener("mousewheel",mouseWheelHandler,true);
   window.addEventListener('DOMMouseScroll', mouseWheelHandler, true); 
 
+  document.addEventListener("keypress",handlerKeyPress,true);
+
   mode=1;
   rx=0;
   ry=0;
@@ -26,10 +28,55 @@ window.addEventListener('load', function(e) {
 //*****************************************************************************
 
 var mode;  //0 is text, 1 is graph
+var renaming=null;
+var rbox; 
 
-function capturekey(e){
+
+var renameOldValue;
+
+function terminateRename()
+{
+  if(renaming!=null)
+  {
+    renaming.innerHTML=renameOldValue;
+    renaming=null;
+  }
+}
+
+function handlerKeyPress(e){
   //alert(e.keyCode);
-  if(e.keyCode==32)
+  //alert(String.fromCharCode(e.keyCode));
+  if(e.keyCode==110)  //'n' for rename
+  {
+    if(renaming==null && selected!=null && (selected.className=="location" || selected.className=="addr"))
+    {
+      renaming=selected;
+      renameOldValue=selected.innerHTML;
+      rbox=document.createElement('input');
+      rbox.setAttribute("type","text");
+      rbox.setAttribute("id","rename");
+      rbox.setAttribute("value",renameOldValue);
+      renaming.innerHTML="";
+      renaming.appendChild(rbox);
+      rbox.focus();
+      e.returnValue=false;
+    }
+  }
+  if(e.keyCode==13)     //enter
+  {
+    if(renaming!=null && rbox.value.length>0)
+    {
+      renaming.innerHTML=rbox.value;
+      //push this to server
+      sendRename(renameOldValue, renaming.innerHTML);
+      renaming=null;
+    }
+  }
+  if(e.keyCode==96)   //bootleg escape
+  {
+    terminateRename();
+  }
+  /*if(e.keyCode==32)
   {
     var el = document.getElementById('mega');
     if(mode==0)  //switch to graph7
@@ -47,7 +94,7 @@ function capturekey(e){
       el.style.left="0px";
       el.style.top="0px";
     }
-  }
+  }*/
 }
 
 //*****************************************************************************
@@ -63,29 +110,51 @@ setInterval(function() {
 
 
 var selected=null;
+function setSelectedStyle(t)
+{
+  t.style.backgroundColor="orange";
+  t.style.color="black";
+}
+
+function resetSelectedStyle(t)
+{
+  t.style.backgroundColor="";
+  t.style.color="";
+}
 
 function handleMousedownNavigate(e)
 {
   if(selected!=null)
-    selected.style.backgroundColor="";
+    resetSelectedStyle(selected);
   
   //alert(e.target.className);
-  if(e.target.className=="location")  //e.target.className=="addr" || 
+  if(e.target.className=="location" || e.target.className=="addr")
   {
-    if(selected==e.target)  //got click on highlighted
-      refreshFunction(selected.innerHTML);  
-    e.target.style.backgroundColor="yellow";
     selected=e.target;
+    setSelectedStyle(selected);
   }
     //alert(e.target.innerHTML);
     //refreshFunction(e.target.innerHTML);
-
 }
+
+window.addEventListener('dblclick', function(e) {
+  //alert("got double click");
+  if(e.target.className=="location")
+  {
+    refreshFunction(selected.innerHTML);
+  }
+},false);
 
 //*****************************************************************************
 //****************************SERVER COMMUNICATION*****************************
 //*****************************************************************************
 
+
+function sendRename(a,b)
+{
+  var req = new XMLHttpRequest();
+  req.open("GET", "Bank/rename/"+a+"/"+b, true); req.send("");
+}
 
 function refreshFunction(address)
 //pull the function instructions+branch tree down from the server
@@ -235,7 +304,7 @@ function updateScreen()
 }
 
 window.addEventListener('mousedown', function(e) {
-
+  terminateRename();
   if(e.target.id=="root" || 
     e.target.parentNode.getAttribute("class")=="frame" ||
     e.target.getAttribute("class")=="bg")
@@ -297,8 +366,8 @@ function drawGraph(data, divlist)
     alert("segment["+s+"]="+segments[s]);*/
 
   nodes[firstaddr].level=0;
-  levels[0]=new Array();
-  levels[0].push(firstaddr);
+  //levels[0]=new Array();
+  //levels[0].push(firstaddr);
 
   for(a=0;a<data.length;a++)
   {
@@ -316,20 +385,22 @@ function drawGraph(data, divlist)
   }
 
 //do Y placement
-  doYPlacement(nodes,levels);
+  maxLevel=0;
+  doYPlacement(nodes, nodes[firstaddr],0);
 //X placement is implied for now
 
 //clear the field
   field=document.getElementById("mega");
   field.innerHTML="<canvas id=\"line_canvas\" width=\"3000px\" height=\"3000px\"></canvas>";
 //place the div boxes
-  for(a=0;a<levels.length;a++)
+  for(a=0;a<=maxLevel;a++)
   {
     thislevel=document.createElement("div");
     thislevel.className="level";
-    for(nodename in levels[a])
+    for(nodename in nodes)
     {
-      thislevel.appendChild(nodes[levels[a][nodename]].box);
+      if(nodes[nodename].level==a)
+        thislevel.appendChild(nodes[nodename].box);
     }
     field.appendChild(thislevel);
   }
@@ -362,28 +433,40 @@ function routeLine(sx, sy, ex, ey, c)  //start has the arrow
   drawlinearray(line, c);
 }
 
+var maxLevel;
+function doYPlacement(nodes,thisnode,level)
+{
+  if(level>maxLevel) maxLevel=level;
+  for(a in thisnode.children)
+  {
+    nodes[thisnode.children[a]].level=level+1;
+    doYPlacement(nodes, nodes[thisnode.children[a]], level+1);
+  }
+}
 
-function doYPlacement(nodes,levels)
+
+/*function doYPlacement(nodes,levels)
 //function is stupid for now
 {
-  for(a=0;a<levels.length;a++)
+  for(a=0;(a<levels.length&&a<10);a++)
   {
     for(nodename in levels[a])
     {
       thisnode=nodes[levels[a][nodename]];
+      //place all children in the level below this one
       for(child in thisnode.children)
       {
-        if(nodes[thisnode.children[child]].level==null) //unplaced
-        {
+        //if(nodes[thisnode.children[child]].level==null) //unplaced
+        //{
           if(levels[a+1]==null) levels[a+1]=new Array();
           nodes[thisnode.children[child]].level=a+1;
           levels[a+1].push(thisnode.children[child]);
-        }
+        //}
       }
     }
   }
   return 0;
-}
+}*/
 
 //*****************************************************************************
 //***************************LOW LEVEL DRAWING*********************************

@@ -69,7 +69,9 @@ std::string ParsedInstruction::webPrint(Data address, Memory *mem)
     }
 
     if(walk->second==DT_OFFSETDATA) {
-      ss << "=";
+      ss << "=0x";
+      ss << (*mem)[(address+stoi(walk->first))][0] << "</span>";     //really should be namelookup
+      break;
     }
     ss << walk->first;
     ss << "</span>";

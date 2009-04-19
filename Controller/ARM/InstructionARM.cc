@@ -80,7 +80,8 @@ bool InstructionARM::initDataProcessing()
   else if(mEncodingARM==ARM_DPIS)           //Data processing immediate shift
     //R3 LSL 4
   {
-    if(i->generic.Rd==REG_PC && i->dpis.Rm==REG_LR && i->dpis.opcode==OPCODE_MOV)
+    //if(i->generic.Rd==REG_PC && i->dpis.Rm==REG_LR && i->dpis.opcode==OPCODE_MOV)
+    if(i->generic.Rd==REG_PC && i->dpis.opcode==OPCODE_MOV)
         mReturn=true;       //MOV PC, LR is return
 
     mString << registersARM(i->dpis.Rm);
@@ -178,6 +179,9 @@ bool InstructionARM::initLoadStore()
   }
   else
   {
+    if(i->generic.Rn==REG_PC && mEncodingARM==ARM_LSIO) {
+      mString.add((i->lsio.immed)+8,DT_OFFSETDATA);
+    }
     mString.add("[",DT_SYMBOL);
     mString << registersARM(i->generic.Rn);
     if(mEncodingARM==ARM_LSIO)

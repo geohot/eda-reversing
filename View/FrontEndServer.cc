@@ -172,7 +172,11 @@ bool FrontEndServer::lexer(int fd,std::string cmd)
       std::stringstream response;
       //response << XML_HEADER << "<top><instructiondata>" << std::endl;
 
-      Function *f=mBank->mem()->inFunction(mBank->mem()->lookupName(argv[2]));
+      Data addr;
+      if(!mBank->mem()->lookupName(argv[2], &addr))
+        goto fail;
+
+      Function *f=mBank->mem()->inFunction(addr);
       std::map<Data,Instruction *>::iterator walk=f->mInstructions.begin();
       response << "<html><div class=\"codebox\" id=\"" <<
         mBank->mem()->getName(walk->first) << "\">" << std::endl;
@@ -201,7 +205,11 @@ bool FrontEndServer::lexer(int fd,std::string cmd)
       std::stringstream response;
       response << XML_HEADER << "<top>" << std::endl;
 
-      Function *f=mBank->mem()->inFunction(mBank->mem()->lookupName(argv[2]));
+      Data addr;
+      if(!mBank->mem()->lookupName(argv[2], &addr))
+        goto fail;
+
+      Function *f=mBank->mem()->inFunction(addr);
       std::vector<Branch>::iterator walk=f->mBranchData.begin();
       while(walk!=f->mBranchData.end()) {
         response << (*walk).getXML() << std::endl;
@@ -210,7 +218,13 @@ bool FrontEndServer::lexer(int fd,std::string cmd)
       response << "</top>";
       sendString(fd, response.str().c_str());
     }
-
+    else if(argv[1]=="rename" && argv.size()>=4) {
+      Data addr;
+      if(mBank->mem()->lookupName(argv[2], &addr)) {
+        mBank->mem()->setName(addr, argv[3]);
+      }
+    }
+fail:
     mBank->unlock(LOCKED_SERVER);
   }
 
@@ -220,9 +234,13 @@ bool FrontEndServer::lexer(int fd,std::string cmd)
 void FrontEndServer::runLoop()
 {
   mBank->lock(LOCKED_SERVER);
-  mBank->mem()->loadFile("bootrom",0x400000);
+  //mBank->mem()->loadFile("bootrom",0x400000);
+  //mBank->mem()->importIDC("bootrom.idc");
+  mBank->mem()->loadFile("eda_test.bin",0);
+
   mBank->unlock(LOCKED_SERVER);
-  mCore->sendMail(Mail(CORE_ANALYSE,0x400054));
+  //mCore->sendMail(Mail(CORE_ANALYSE,0x400054));
+  mCore->sendMail(Mail(CORE_ANALYSE,0));
 
   if(!serverListen()) { delete this; return; }  //works?
   else info << "server started" << std::endl;
