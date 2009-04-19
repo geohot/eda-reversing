@@ -4,6 +4,8 @@
 
 window.addEventListener('load', function(e) {
   window.addEventListener("mousewheel",mouseWheelHandler,true);
+  window.addEventListener('DOMMouseScroll', mouseWheelHandler, true); 
+
   mode=1;
   rx=0;
   ry=0;
@@ -12,7 +14,11 @@ window.addEventListener('load', function(e) {
   document.getElementById('functionlist').onmousedown=function(){return false};
 
   refreshFunctionList();
-  //refreshFunction("4010ec");
+
+  if(location.hash!=null&&location.hash!="")		//for refresh
+	{
+		refreshFunction(location.hash.replace("#",""));
+	}
 }, false);
 
 //*****************************************************************************
@@ -26,7 +32,7 @@ function capturekey(e){
   if(e.keyCode==32)
   {
     var el = document.getElementById('mega');
-    if(mode==0)  //switch to graph
+    if(mode==0)  //switch to graph7
     {
       mode=1;
       setStyleByClass("boringbox","codebox");
@@ -45,6 +51,38 @@ function capturekey(e){
 }
 
 //*****************************************************************************
+//*********************************NAVIGATION**********************************
+//*****************************************************************************
+
+var oldhash;
+setInterval(function() {
+	if(oldhash!=null && oldhash!=location.hash && location.hash!="")
+		refreshFunction(location.hash.replace("#",""));
+	oldhash=location.hash;
+}, 50);
+
+
+var selected=null;
+
+function handleMousedownNavigate(e)
+{
+  if(selected!=null)
+    selected.style.backgroundColor="";
+  
+  //alert(e.target.className);
+  if(e.target.className=="location")  //e.target.className=="addr" || 
+  {
+    if(selected==e.target)  //got click on highlighted
+      refreshFunction(selected.innerHTML);  
+    e.target.style.backgroundColor="yellow";
+    selected=e.target;
+  }
+    //alert(e.target.innerHTML);
+    //refreshFunction(e.target.innerHTML);
+
+}
+
+//*****************************************************************************
 //****************************SERVER COMMUNICATION*****************************
 //*****************************************************************************
 
@@ -52,6 +90,22 @@ function capturekey(e){
 function refreshFunction(address)
 //pull the function instructions+branch tree down from the server
 {
+  //alert("refreshfunction "+address);
+
+  onPage=document.getElementById(address);
+  if(onPage!=null)
+  {
+    //move the screen
+    
+    //alert("found on page");
+    gx=(-onPage.offsetLeft)+500;
+    gy=(-onPage.offsetTop)+500;
+    glideInterval=setInterval("glide()",20);
+    return;
+  }
+
+  selected=null;  //selections no longer valid, this is a real update
+
   var req = new XMLHttpRequest(), reqBD = new XMLHttpRequest();
   req.open("GET", "Bank/getFunction/"+address, true); req.send("");
 
@@ -75,12 +129,13 @@ function refreshFunction(address)
   reqBD.onreadystatechange = function(){
   if (reqBD.readyState == 4) {
 //*****Got Response*****
-  drawGraph(reqBD.responseXML.documentElement.childNodes, address, bigdiv.childNodes);
+  drawGraph(reqBD.responseXML.documentElement.childNodes, bigdiv.childNodes);
 //******Cleanup******
   }
   }
 
-
+  oldhash="#"+address;
+  location.hash=address;
 }
 
 function refreshFunctionList()
@@ -101,7 +156,8 @@ function refreshFunctionList()
     {
       //alert(m[a].childNodes[0].nodeValue);
       spit+='<div class="function" ondblclick="refreshFunction('+
-        "'"+m[a].attributes[0].value+"'"+')">'+
+        //"'"+m[a].attributes[0].value+"'"+')">'+
+        "'"+m[a].childNodes[0].nodeValue+"'"+')">'+
         m[a].childNodes[0].nodeValue+'</div>';
     }
   }
@@ -115,23 +171,65 @@ function refreshFunctionList()
 //*******************************SCREEN MOVEMENT*******************************
 //*****************************************************************************
 
+var glideInterval;
+
+function glide()
+{
+  var ratiox,ratioy;
+  var glideRate=50;  //set gliderate here
+
+  if(Math.abs(gx-rx)<=glideRate && Math.abs(gy-ry)<=glideRate)
+  {
+    rx=gx;
+    ry=gy;
+    clearInterval(glideInterval);
+  }
+  else
+  {
+    ratiox=(gx-rx)/Math.abs((gx-rx)+(gy-ry));
+    ratioy=(gy-ry)/Math.abs((gx-rx)+(gy-ry));
+
+    rx+=glideRate*ratiox;
+    ry+=glideRate*ratioy;
+  }
+  
+  updateScreen();
+
+  
+}
+
+var gx,gy;
 var x,y;
 var rx,ry;
 var moving;
 
 function mouseWheelHandler(e){
   //alert("Scroll");
-  var el = document.getElementById('mega');
-  ry=(ry+e.wheelDelta/120);
-  el.style.top=ry+"px";
+  //alert(navigator.userAgent);
+  var ue=navigator.userAgent.toLowerCase()
+  if(ue.indexOf("chrome") != -1)
+    ry=(ry+e.wheelDelta/120);   //for chrome
+  else if(ue.indexOf("firefox") != -1)
+    ry=ry+(e.detail*40);         //for firefox
+  else
+    ry=ry+e.wheelDelta;         //for safari
+
+  updateScreen();
 }
 
+
 function movescreen(e) {
-  var el = document.getElementById('mega');
+  
   rx=rx+(e.clientX-x);
   ry=ry+(e.clientY-y);
   x=e.clientX;
   y=e.clientY;
+  updateScreen();
+}
+
+function updateScreen()
+{
+  var el = document.getElementById('mega');
   el.style.left=rx+"px";
   el.style.top=ry+"px";
 }
@@ -155,8 +253,7 @@ window.addEventListener('mouseup', function(e) {
     window.removeEventListener('mousemove', movescreen, false);
     if(moving!=1)
     {
-      //highlight(e);
-      //deselectAll();
+      handleMousedownNavigate(e);
     }
     moving=0;
   }
@@ -168,7 +265,7 @@ window.addEventListener('mouseup', function(e) {
 //*****************************************************************************
 
 //place the codeboxes and draw the lines
-function drawGraph(data, topBox, divlist)
+function drawGraph(data, divlist)
 {
   //get all the boxes on the field
   nodes = new Array();
@@ -176,10 +273,13 @@ function drawGraph(data, topBox, divlist)
   lines = new Array();  //memory is cheap
   segments = new Array(); //segments[end]=start;
 
+  firstaddr=-1;
+
   for(a=0;a<divlist.length;a++) {
     if(divlist[a].nodeType==1)
     {
-      nodes[divlist[a].childNodes[1].id]={ 
+      if(firstaddr==-1) firstaddr=divlist[a].childNodes[3].id;
+      nodes[divlist[a].childNodes[3].id]={ 
         box: divlist[a],
         level: null, 
         parents: new Array(),   //from parents
@@ -189,13 +289,16 @@ function drawGraph(data, topBox, divlist)
         widthx: 0, 
         centerx: 0,
         xweight: 0};
-      segments[divlist[a].lastChild.previousSibling.id]=divlist[a].childNodes[1].id;
+      segments[divlist[a].lastChild.previousSibling.id]=divlist[a].childNodes[3].id;
     }
   }
 
-  nodes[topBox].level=0;
+  /*for(s in segments)
+    alert("segment["+s+"]="+segments[s]);*/
+
+  nodes[firstaddr].level=0;
   levels[0]=new Array();
-  levels[0].push(topBox);
+  levels[0].push(firstaddr);
 
   for(a=0;a<data.length;a++)
   {
@@ -204,7 +307,9 @@ function drawGraph(data, topBox, divlist)
     {
       //[0] is color, [1] is to, [2] is from
       //node[segments[m[2].value]].box.style.backgroundColor="yellow";
+      if(nodes[segments[m[2].value]]==null) alert(m[2].value + "  "+segments[m[2].value]);
       nodes[segments[m[2].value]].children.push(m[1].value);
+      if(nodes[m[1].value]==null) alert(m[1].value);
       nodes[m[1].value].parents.push(segments[m[2].value]);
       lines.push({to: m[1].value, from: segments[m[2].value], color: m[0].value});
     }

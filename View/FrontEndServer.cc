@@ -155,10 +155,10 @@ bool FrontEndServer::lexer(int fd,std::string cmd)
       std::stringstream response;
       response << XML_HEADER << "<top>" << std::endl;
 
-      FunctionIterator walk=mBank->mFunctionCache.mStore.begin();
-      while(walk!=mBank->mFunctionCache.mStore.end()) {
+      FunctionIterator walk=mBank->mem()->mFunctionStore.begin();
+      while(walk!=mBank->mem()->mFunctionStore.end()) {
         response << std::hex << "<function address=\""
-          << walk->first << "\">" << walk->second.mName << "</function>" << std::endl;
+          << walk->first << "\">" << mBank->mem()->getName(walk->first) << "</function>" << std::endl;
         ++walk;
       }
 
@@ -172,13 +172,23 @@ bool FrontEndServer::lexer(int fd,std::string cmd)
       std::stringstream response;
       //response << XML_HEADER << "<top><instructiondata>" << std::endl;
 
-      Function *f=mBank->mFunctionCache.inFunction(hexstrtoint(argv[2]));
+      Function *f=mBank->mem()->inFunction(mBank->mem()->lookupName(argv[2]));
       std::map<Data,Instruction *>::iterator walk=f->mInstructions.begin();
-      response << "<html><div class=\"codebox\">" << std::endl;
+      response << "<html><div class=\"codebox\" id=\"" <<
+        mBank->mem()->getName(walk->first) << "\">" << std::endl;
+
+      //next line should really get name
+      response << std::hex << "<div class=\"addr\">" <<
+        mBank->mem()->getName(walk->first) << "</div>" << std::endl;
+
       while(walk!=f->mInstructions.end()) {
-        if(walk->second->mLandingPad==true)
-          response << "</div>" << std::endl << "<div class=\"codebox\">" << std::endl;
-        response << walk->second->mString.webPrint(walk->first);
+        if(walk->second->mLandingPad==true) {
+          response << "</div>" << std::endl << "<div class=\"codebox\" id=\"" <<
+            mBank->mem()->getName(walk->first) << "\">" << std::endl;
+          response << std::hex << "<div class=\"addr\">" <<
+            mBank->mem()->getName(walk->first) << "</div>" << std::endl;
+        }
+        response << walk->second->mString.webPrint(walk->first, mBank->mem());
         ++walk;
       }
       response << "</div></html>";
@@ -191,7 +201,7 @@ bool FrontEndServer::lexer(int fd,std::string cmd)
       std::stringstream response;
       response << XML_HEADER << "<top>" << std::endl;
 
-      Function *f=mBank->mFunctionCache.inFunction(hexstrtoint(argv[2]));
+      Function *f=mBank->mem()->inFunction(mBank->mem()->lookupName(argv[2]));
       std::vector<Branch>::iterator walk=f->mBranchData.begin();
       while(walk!=f->mBranchData.end()) {
         response << (*walk).getXML() << std::endl;

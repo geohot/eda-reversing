@@ -32,6 +32,31 @@ File& Memory::operator[](Data address)
   }
 }
 
+std::string Memory::getName(Data address)
+{
+  std::map<Data, std::string>::iterator walk;
+  walk=mNames.find(address);
+  if(walk!=mNames.end()) return walk->second;
+  else {
+    std::stringstream ss;
+    ss << "loc_" << std::hex << address;
+    return ss.str();
+  }
+}
+
+void Memory::setName(Data address, std::string name)
+{
+  std::map<Data, std::string>::iterator nameiter=mNames.find(address);
+  if(nameiter!=mNames.end()) mReverseNames.erase(nameiter->second);
+  mNames.insert(std::make_pair(address, name));         //does insert overwrite?
+  mReverseNames.insert(std::make_pair(name, address));
+}
+
+Data Memory::lookupName(std::string name)
+{
+  return mReverseNames.find(name)->second;
+}
+
 bool Memory::exists(Data address) {
   //info << "Checking existence of " << address << std::endl;
   std::map<int, std::vector<File> >::iterator addr;
@@ -156,5 +181,25 @@ int Memory::fileSize(FILE *f)
   end=ftell(f);
   fseek(f, pos, SEEK_SET);
   return end;
+}
+
+//deal with functions in Memory
+Function *Memory::addFunction(int start)
+{
+  std::stringstream name;
+  name << std::hex << "sub_" << start;
+  setName(start, name.str()); //name the function in the memory space
+  return &(mFunctionStore.insert(std::make_pair(start,Function(start))).first->second);
+}
+
+Function* Memory::inFunction(Data addr)
+{
+  //return function with this instruction in it
+  //doesn't work yet
+  FunctionIterator a=mFunctionStore.find(addr);
+  if(a!=mFunctionStore.end())
+    return &(a->second);
+  else
+    return 0;
 }
 

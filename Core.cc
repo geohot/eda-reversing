@@ -57,7 +57,7 @@ void Core::runLoop()
     }
     else if(event.mCommand==CORE_ANALYSE)
     {
-      fastAnalyse((Data)event.mParam, mBank->mFunctionCache.add((Data)event.mParam), false);
+      fastAnalyse((Data)event.mParam, mBank->mem()->addFunction((Data)event.mParam), false);
     }
     //info << "i've got mail: " << event.mParam << endl;
   }

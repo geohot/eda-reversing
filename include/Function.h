@@ -40,8 +40,7 @@ public:
 
 class Function {
 public:
-  Function(Data start, std::string name): mName(name), mStart(start) {}
-  std::string mName;
+  Function(Data start): mStart(start) {}
   Data mStart;
   //std::vector<std::pair<Data, Data> > mSegments;
   std::map<Data,Instruction *> mInstructions;

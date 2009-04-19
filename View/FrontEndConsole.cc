@@ -101,7 +101,8 @@ bool FrontEndConsole::lexer(string cmd)
   }
   else if(argv[0]=="dumpfcache") {
     mBank->lock(LOCKED_SERVER);
-    mBank->mFunctionCache.debugPrint();
+    //mBank->mFunctionCache.debugPrint();
+    cout << "broken" << endl;
     mBank->unlock(LOCKED_SERVER);
   }
   else

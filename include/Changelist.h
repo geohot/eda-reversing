@@ -6,13 +6,13 @@
 #define EDA_CHANGELIST_H_
 
 #include "RegisterFile.h"
-#include "Memory.h"
 
 #include "macros.h"
 #include "StatelessChangelist.h"
 
 namespace eda {
 
+class Memory;
 class Location;
 
 class Changelist

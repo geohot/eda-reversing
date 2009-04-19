@@ -32,16 +32,45 @@ void CoreARM::fastAnalyse(Data addr, Function *currentFunction, bool first)
   Data a;
   mBank->lock(LOCKED_CORE);
 
-  //info << "analysing " << std::hex << addr << std::endl;
   InstructionIterator working;
+  std::map<Data,Instruction *>::iterator impblue;
+#ifdef VERBOSE
+  info << "analysing " << std::hex << addr << std::endl;
+#endif
   do
   {
+
+  //see if we've been here before, if so, die
+    //also possibly set landing pad
+    //also possibly add a blue implicit
+    impblue=currentFunction->mInstructions.find(addr);
+    if(impblue!=currentFunction->mInstructions.end()) {
+      if(first==true) {    //mark as landingPad
+        impblue->second->mLandingPad=true;
+      }
+      //instruction already here
+      //adding implicit
+      impblue=currentFunction->mInstructions.find(addr-4);
+      //if instruction is found in function and it isn't a branch, add the implicit blue line
+      if(impblue!=currentFunction->mInstructions.end() && impblue->second->mBranch==false)
+        currentFunction->mBranchData.push_back(Branch(BRANCH_FOLLOW, addr-4, addr));
+#ifdef VERBOSE
+      info << "repeat at " << std::hex << addr << std::endl;
+#endif
+      goto done;
+    }
+
+
     //info << "  disassembling" << addr << std::endl;
     if(!(mBank->mem()->exists(addr)))
     {
-      //info << "memory isn't real: " << addr << std::endl;
+#ifdef VERBOSE
+      info << "memory isn't real: " << addr << std::endl;
+#endif
       goto done;
     }
+
+
     working=disassemble(addr);
     if(first==true) {    //mark as landingPad
       working->second.mLandingPad=true;
@@ -60,32 +89,45 @@ void CoreARM::fastAnalyse(Data addr, Function *currentFunction, bool first)
   } while(working->second.mBranch==false);
   addr-=4;
   a=working->second.mAction.resolveToRegisterWithRegister(15, addr+8);
-  //info << std::hex << "found next branch at " << addr << " to " << a << std::endl;
+#ifdef VERBOSE
+  info << std::hex << "found next branch at " << addr << " to " << a << std::endl;
+#endif
   if(working->second.mConditional)      //if conditional, continue here as well
   {
-    if(mBank->mInstructionCache.find(addr+4)==mBank->mInstructionCache.end()) {
+    currentFunction->mBranchData.push_back(Branch(BRANCH_CONDITIONFAIL, addr, addr+4));
+    if(currentFunction->mInstructions.find(addr+4)==currentFunction->mInstructions.end()) {
       //not in icache already
-      currentFunction->mBranchData.push_back(Branch(BRANCH_CONDITIONFAIL, addr, addr+4));
       fastAnalyse(addr+4, currentFunction, true);       //recurse..weeeee
     }
   }
   //for normal branches + conditionals
-  if(mBank->mInstructionCache.find(a)==mBank->mInstructionCache.end()) {
-    //not in icache already
-    //if linked, add it to the function cache
-    if(working->second.mLinkedBranch==true) {
-      fastAnalyse(addr+4, currentFunction, false);     //continue here, since it'll be back
-      //info << "function found at: " << a << std::endl;
-      fastAnalyse(a, mBank->mFunctionCache.add(a), false);     //and do the new function
+
+  //not in icache already
+  //if linked, add it to the function cache
+  if(working->second.mLinkedBranch==true) {
+    fastAnalyse(addr+4, currentFunction, false);     //continue here, since it'll be back
+    if(mBank->mem()->inFunction(a)==0)  //is function not done
+    {
+      info << "function found at: " << a << std::endl;
+      fastAnalyse(a, mBank->mem()->addFunction(a), false);     //and do the new function
     }
+  }
+  else
+  {
+    if(working->second.mConditional)
+      currentFunction->mBranchData.push_back(Branch(BRANCH_CONDITIONPASS, addr, a));
     else
     {
-      if(working->second.mConditional)
-        currentFunction->mBranchData.push_back(Branch(BRANCH_CONDITIONPASS, addr, a));
-      else
-        currentFunction->mBranchData.push_back(Branch(BRANCH_FOLLOW, addr, a));
-      fastAnalyse(a, currentFunction, true);
+      //branching from current addr to branch location
+      currentFunction->mBranchData.push_back(Branch(BRANCH_FOLLOW, addr, a));
+      //branching from branch location-4 to branch location, possibly
+      //conditionals should have been done already and pushed
+      /*impblue=currentFunction->mInstructions.find(a-4);
+      //if instruction is found in function and it isn't a branch, add the implicit blue line
+      if(impblue!=currentFunction->mInstructions.end() && impblue->second->mBranch==false)
+        currentFunction->mBranchData.push_back(Branch(BRANCH_FOLLOW, a-4, a));*/
     }
+    fastAnalyse(a, currentFunction, true);
   }
 done:
   mBank->unlock(LOCKED_CORE);

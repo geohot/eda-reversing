@@ -228,6 +228,9 @@ bool InstructionARM::initBranches()
 //********************Data********************
 //  **First**
   int bl=((i->bbl.offset&0x800000)?(0xFC000000):0)|(i->bbl.offset<<2);
+
+  mString.add((Data)(bl+8),DT_OFFSETADDRESS);
+
   if(bl<0) mString << registersARM(REG_PC) << "-" << (0-(Data)bl);
   else if(bl>0) mString << registersARM(REG_PC) << "+" << (Data)bl;
   else mString << registersARM(REG_PC);

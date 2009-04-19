@@ -12,7 +12,6 @@
 #include "Memory.h"
 #include "RegisterFile.h"
 #include "Instruction.h"
-#include "FunctionCache.h"
 
 #define LOCKED_NONE 0
 #define LOCKED_CORE 1
@@ -33,7 +32,6 @@ public:
   Memory* mem();
   std::vector<RegisterFile>::iterator currentRegisterFile;
   std::map<Data,Instruction> mInstructionCache;
-  FunctionCache mFunctionCache;
 private:
   std::vector<RegisterFile> RegisterFiles;
   mutexContainer mBankMutex;

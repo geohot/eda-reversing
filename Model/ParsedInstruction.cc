@@ -3,6 +3,7 @@
 //  released under GPLv3, see http://gplv3.fsf.org/
 
 #include "ParsedInstruction.h"
+#include "Memory.h"
 #include <vector>
 #include <string>
 
@@ -34,11 +35,23 @@ void ParsedInstruction::consolePrint()
 #define DT_DECIMAL 7
 #define DT_SUBOPCODE 8
 #define DT_SIGNED 9
+#define DT_OFFSETADDRESS 10 //isn't
+#define DT_OFFSETDATA 11
  */
 
-const char divLookup[10][30] = {"opcode", "flag", "register", "immed", "formatting", "flag", "symbol", "immed","subopcode","immed"};
+const char divLookup[12][30] = {"opcode", "flag", "register", "immed", "formatting", "flag", "symbol", "immed","subopcode","immed","location","immed"};
 
-std::string ParsedInstruction::webPrint(Data address)
+Data ParsedInstruction::stoi(std::string s)
+//convert string to Data
+{
+  Data ret;
+  std::istringstream ss(s);
+  ss >> std::hex >> ret;
+  return ret;
+}
+
+std::string ParsedInstruction::webPrint(Data address, Memory *mem)
+//needs memory for things like pc dereffing and names
 {
   std::stringstream ss;
   ss << std::hex << "<div class=\"instruction\" id=\"" << address << "\">";
@@ -48,6 +61,16 @@ std::string ParsedInstruction::webPrint(Data address)
   while(walk!=mString.end())
   {
     ss << "<span class=\"" << divLookup[walk->second] << "\">";
+    if(walk->second==DT_OFFSETADDRESS) {            //address is pc
+      /*ss << "<span class=\"" << divLookup[walk->second] << "\" ondblclick=\"refreshFunction('" <<
+        mem->getName(address+stoi(walk->first)) <<"')\">";*/
+      ss << mem->getName(address+stoi(walk->first)) << "</span>";     //really should be namelookup
+      break;
+    }
+
+    if(walk->second==DT_OFFSETDATA) {
+      ss << "=";
+    }
     ss << walk->first;
     ss << "</span>";
     if(walk->second==DT_CONDITION) {

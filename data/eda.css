@@ -73,6 +73,7 @@ body {
 	/*max-width: 300px;*/
 	/*max-height: 400px;*/
 	font: 14px Lucida Console;
+	/*font-weight: 600;*/
 	display: inline-block;
 	vertical-align: top;
 }
@@ -130,6 +131,7 @@ body {
 	width: auto;
 	white-space: nowrap;
 	text-align: left;
+	color: gray;
 	/*padding-top: 5px;*/
 }
 
@@ -176,4 +178,8 @@ body {
 
 .immed {
 	color: green;
+}
+
+.location {
+	color: gray;
 }
