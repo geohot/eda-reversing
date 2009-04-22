@@ -30,11 +30,8 @@ class Memory;
 #define OPERATION_ASR 10
 #define OPERATION_ROR 11
 
-const char operations_s[][4]={
-    "&","^","`-","-","+",
-    "|","~&","",
-    "<<",">>",">>>",">/>"
-};
+const char operations_s[][4] = { "&", "^", "`-", "-", "+", "|", "~&", "", "<<",
+    ">>", ">>>", ">/>" };
 //high operations, evaluateOperation doesn't do these
 #define OPERATION_DEREF 256
 #define OPERATION_NONE 257
@@ -46,25 +43,22 @@ const char operations_s[][4]={
 //Location is either a register or memory for now
 // it resolves one away from the end
 
-class Location
-{
+class Location {
 public:
-  Location(Data);       //Data is a memory address
-  Location(int);        //int is a register
+  Location(Data); //Data is a memory address
+  Location(int); //int is a register
   void assign(int changelistNumber, Data value, RegisterFile *r, Memory *m);
 private:
   Data mStore;
   int mDataType;
 };
 
-
 //StatelessData is just a storage class, actually not, have it walk
-class StatelessData
-{
+class StatelessData {
 public:
   StatelessData();
-  StatelessData(Data);  //immediate data
-  StatelessData(int);   //immediate register
+  StatelessData(Data); //immediate data
+  StatelessData(int); //immediate register
   StatelessData(int, int, StatelessData *);
   StatelessData(int, StatelessData *); //like dereference
   void debugPrint();

@@ -19,37 +19,32 @@ namespace eda {
 #define MAIL_NONE 0
 #define MAIL_SERVER 1
 
-class Mail
-{
+class Mail {
 public:
-  Mail()
-  {
+  Mail() {
 
   }
-  Mail(int lcmd, int lparam)
-  {
-    mCommand=lcmd;
-    mParam=lparam;
+  Mail(int lcmd, int lparam) {
+    mCommand = lcmd;
+    mParam = lparam;
   }
   int mCommand;
   int mParam;
 };
 
-class Mailbox
-{
+class Mailbox {
 public:
   Mailbox();
   ~Mailbox();
   void sendMail(Mail mail);
-  Mail waitForMail();    //dude, you're really gonna sit by the mailbox all day?
-  Mail checkMailbox();   //NULL is no mail, else mail. i love mail
+  Mail waitForMail(); //dude, you're really gonna sit by the mailbox all day?
+  Mail checkMailbox(); //NULL is no mail, else mail. i love mail
 private:
-  std::queue<Mail> mPostOffice;  //we only mail Mails, strings cost more
+  std::queue<Mail> mPostOffice; //we only mail Mails, strings cost more
   mutexContainer mMutex;
   eventContainer mOMGMail;
 };
 
 }
-
 
 #endif /* EDA_MAILBOX_H_ */

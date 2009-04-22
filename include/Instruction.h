@@ -24,15 +24,15 @@ public:
     //mString.debugPrint();
     mAction.debugPrint();
   }
-  ParsedInstruction mString;    //this is the String the instruction looks like
-//protected:
-  StatelessChangelist mAction;  //this is the Action the instruction does
+  ParsedInstruction mString; //this is the String the instruction looks like
+  //protected:
+  StatelessChangelist mAction; //this is the Action the instruction does
 
-  bool mConditional;     //is instruction conditional?
-  bool mBranch;         //is this a branch instruction
-  bool mLinkedBranch;   //is this a call to a subroutine?
-  bool mReturn;         //is this a return from a subroutine?
-  bool mLandingPad;     //do local things call this?, set in fastAnalyse
+  bool mConditional; //is instruction conditional?
+  bool mBranch; //is this a branch instruction
+  bool mLinkedBranch; //is this a call to a subroutine?
+  bool mReturn; //is this a return from a subroutine?
+  bool mLandingPad; //do local things call this?, set in fastAnalyse
 };
 
 }

@@ -21,14 +21,13 @@ namespace eda {
 //every entry has finite characteristics
 
 //every ARM assembly instruction is of the following form
-  //[register+-Data]
+//[register+-Data]
 
 //target is memory[register+-register], memory[register+-immed]
 
 class Changelist;
 
-class StatelessChangelist
-{
+class StatelessChangelist {
 public:
   Changelist resolve(int changelistNumber, RegisterFile *r, Memory *m);
   //generates a changelist with state using the register file and memory
@@ -40,7 +39,7 @@ public:
   Data resolveToRegisterWithRegister(int reg, Data Value);
 private:
   std::vector<std::pair<StatelessData, StatelessData> > mInternalChangelist;
-//some rep
+  //some rep
 };
 
 }

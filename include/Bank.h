@@ -6,8 +6,6 @@
 #define EDA_BANK_H_
 #include "threading.h"
 
-#include "Observable.h"
-
 #include <vector>
 #include "Memory.h"
 #include "RegisterFile.h"
@@ -22,20 +20,20 @@ namespace eda {
 
 #define InstructionIterator std::map<Data,Instruction>::iterator
 
-class Bank: public Observable {
+class Bank {
 public:
   Bank();
   virtual ~Bank();
   void lock(int locker);
   void unlock(int locker);
-  void waitForAction();                 //wait for lock and unlock
+  void waitForAction(); //wait for lock and unlock
   Memory* mem();
   std::vector<RegisterFile>::iterator currentRegisterFile;
-  std::map<Data,Instruction> mInstructionCache;
+  std::map<Data, Instruction> mInstructionCache;
 private:
   std::vector<RegisterFile> RegisterFiles;
   mutexContainer mBankMutex;
-  int mLocker,mLockCount;
+  int mLocker, mLockCount;
   Memory mMem;
 };
 

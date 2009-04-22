@@ -9,14 +9,13 @@
 using namespace std;
 
 //something has got to be done about this
-const char filename[]="z:\\EDA\\eda-reversing\\tests\\data\\Memory_data";
+const char filename[] = "z:\\EDA\\eda-reversing\\tests\\data\\Memory_data";
 
-int Memory_test()
-{
+int Memory_test() {
   cout << endl;
   eda::Memory test;
   assert(test.loadFile(filename, 0x80000));
   test.debugPrint();
-  test.consoleDump(0x80000,0x40,1);
+  test.consoleDump(0x80000, 0x40, 1);
   return 0;
 }

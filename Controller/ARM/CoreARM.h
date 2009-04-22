@@ -13,13 +13,11 @@
 
 namespace eda {
 
-
-class CoreARM : public Core
-{
+class CoreARM: public Core {
 public:
   CoreARM(Bank* bank);
-  InstructionIterator disassemble(Data);   //should add to instruction cache
-  void fastAnalyse(Data, Function *,bool);
+  InstructionIterator disassemble(Data); //should add to instruction cache
+  void fastAnalyse(Data, Function *, bool);
 };
 
 }

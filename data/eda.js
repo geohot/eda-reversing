@@ -346,8 +346,12 @@ function graphDraw(data, divlist)
   firstaddr=-1;
  
   for(a=0;a<divlist.length;a++) {
-    if(divlist[a].nodeType==1)
+    if(divlist[a].nodeType==1 && divlist[a].childNodes.length>3)
     {
+      //alert(divlist[a].nodeName);
+      //alert(divlist[a].childNodes[3].className);
+      //alert(divlist[a].childNodes[2].id);
+      
       //alert("got node at: "+divlist[a].childNodes[3].id);
       if(firstaddr==-1) firstaddr=divlist[a].childNodes[3].id;
       nodes[divlist[a].childNodes[3].id]={ 
@@ -411,11 +415,11 @@ function graphDraw(data, divlist)
     //level[nodes[a].level].appendChild(nodes[a].box);
     level[nodes[a].level].push(a);
   }
-  if(level[null]!=null)
+  /*if(level[null]!=null)
   {
     level[null].style.backgroundColor="red";
     field.appendChild(level[null]);
-  }
+  }*/
 
 //sort levels, ghetto crossing minimization
   var levelsSorted = new Array();

@@ -29,27 +29,24 @@ class Memory;
 #define DT_SIGNED 9
 #define DT_OFFSETADDRESS 10    //deferenced
 #define DT_OFFSETDATA 11 //isn't
-
-class ParsedInstruction
-{
+class ParsedInstruction {
 public:
   void consolePrint();
   std::string webPrint(Data, Memory *);
   void debugPrint();
-  void add(std::pair<std::string,int>);
+  void add(std::pair<std::string, int>);
   void add(std::string, int);
   void add(Data);
   void add(Data, int);
-//let me try it, alternate mutators for more readibility
-  ParsedInstruction& operator<<(std::pair<std::string,int>);
+  //let me try it, alternate mutators for more readibility
+  ParsedInstruction& operator<<(std::pair<std::string, int>);
   ParsedInstruction& operator<<(const char *);
   ParsedInstruction& operator<<(Data a);
 private:
-  std::vector<std::pair<std::string,int> > mString;
+  std::vector<std::pair<std::string, int> > mString;
   Data stoi(std::string);
 };
 
 }
-
 
 #endif /* EDA_PARSEDINSTRUCTION_H_ */

@@ -6,12 +6,10 @@
 
 using namespace eda;
 
-RegisterFile::RegisterFile(int size)
-{
+RegisterFile::RegisterFile(int size) {
   mRegisterStore.resize(size);
 }
 
-File& RegisterFile::operator[](int registerNumber)
-{
+File& RegisterFile::operator[](int registerNumber) {
   return mRegisterStore[registerNumber];
 }

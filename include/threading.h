@@ -14,8 +14,8 @@
 #include <windows.h>
 
 /*void *CreateThread(int, int, DWORD WINAPI (*)(void*), void *, int, int);
-int SuspendThread(void *);
-int ExitThread(int);*/
+ int SuspendThread(void *);
+ int ExitThread(int);*/
 //int
 
 #define threadContainer void *  //HANDLE
@@ -38,7 +38,6 @@ int ExitThread(int);*/
 #define eventReset(x) ResetEvent(*x)
 #define eventWaitFor(x) WaitForSingleObject(*x, INFINITE)
 #define eventIsSet(x) WaitForSingleObject(*x, 0)
-
 
 #else
 //pthreads
@@ -67,6 +66,5 @@ int ExitThread(int);*/
 #define eventReset(x) mutexLock(x)
 
 #endif
-
 
 #endif /* EDA_THREADING_H_ */

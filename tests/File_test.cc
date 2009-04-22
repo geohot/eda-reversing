@@ -8,21 +8,20 @@
 
 using namespace std;
 
-int File_test()
-{
+int File_test() {
   eda::File test;
 
   test.set(0, 0x20);
   test.set(4, 0x50);
   test.set(8, 0x104);
 
-  assert(test[4]==0x50);
+  assert(test[4] == 0x50);
   test.set(4, 0x12);
-  assert(test[4]==0x12);
+  assert(test[4] == 0x12);
 
-  assert(test[7]==0x12);
-  assert(test[10]==0x104);
-  assert(test[1]==0x20);
+  assert(test[7] == 0x12);
+  assert(test[10] == 0x104);
+  assert(test[1] == 0x20);
 
   cout << test[100] << " pass" << endl;
 

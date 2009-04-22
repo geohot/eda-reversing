@@ -10,8 +10,7 @@
 
 namespace eda {
 
-class RegisterFile
-{
+class RegisterFile {
 public:
   RegisterFile(int size);
   File& operator[](int RegisterNumber);

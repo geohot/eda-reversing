@@ -16,10 +16,9 @@ namespace eda {
 
 #define CONDITION_ALWAYS 0xE
 
-class InstructionARM : public Instruction
-{
+class InstructionARM: public Instruction {
 public:
-  InstructionARM(Data opcode);  //disassembler
+  InstructionARM(Data opcode); //disassembler
 private:
   bool init();
   bool initDataProcessing();

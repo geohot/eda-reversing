@@ -5,7 +5,6 @@ cmake_minimum_required(VERSION 2.6)
 
 PROJECT(eda-reversing)
 SET(EDA_SRCS
-./Server.cc
 ./main.cc
 ./Core.cc
 ./tests/File_test.cc
@@ -19,7 +18,6 @@ SET(EDA_SRCS
 ./Controller/Changelist.cc
 ./Model/File.cc
 ./Model/Memory.cc
-./Model/FunctionCache.cc
 ./Model/RegisterFile.cc
 ./Model/ParsedInstruction.cc
 ./View/FrontEndServer.cc

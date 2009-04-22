@@ -10,13 +10,13 @@
 
 #include <string>
 
-namespace eda
-{
+namespace eda {
 
-class FrontEndConsole : public FrontEnd
-{
+class FrontEndConsole: public FrontEnd {
 public:
-  FrontEndConsole(Bank *bank) : FrontEnd(bank) {}
+  FrontEndConsole(Bank *bank) :
+    FrontEnd(bank) {
+  }
   bool lexer(std::string);
 private:
   int strtoint(std::string);

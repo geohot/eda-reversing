@@ -13,21 +13,20 @@
 
 #include <string>
 
-namespace eda
-{
+namespace eda {
 
-class FrontEnd
-{
+class FrontEnd {
 public:
   FrontEnd();
   FrontEnd(Bank *bank);
   virtual ~FrontEnd();
   void attach(Core *);
+  void launch();  //needed to fix linux issues
 protected:
-  virtual void runLoop();
   Mailbox *mCore;
   Bank *mBank;
 private:
+  virtual void runLoop();
   static void entryPoint(void *);
   threadContainer mThread;
 };

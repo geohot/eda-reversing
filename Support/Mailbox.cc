@@ -8,44 +8,40 @@
 
 using namespace eda;
 
-Mailbox::Mailbox()
-{
+Mailbox::Mailbox() {
   mutexInit(&mMutex);
   eventInit(&mOMGMail);
 }
 
-Mailbox::~Mailbox()
-{
+Mailbox::~Mailbox() {
   mutexDestroy(&mMutex);
   eventDestroy(&mOMGMail);
 }
 
 //call from anywhere
-void Mailbox::sendMail(Mail themail)
-{
+void Mailbox::sendMail(Mail themail) {
   mutexLock(&mMutex);
   mPostOffice.push(themail);
-  eventSet(&mOMGMail);   //you've got mail
+  eventSet(&mOMGMail); //you've got mail
   mutexUnlock(&mMutex);
 }
 
-Mail Mailbox::checkMailbox()
-{
+Mail Mailbox::checkMailbox() {
   Mail ret;
   mutexLock(&mMutex);
-  if(mPostOffice.size()==0) ret=Mail(0,0);
-  else
-  {
-    ret=mPostOffice.front();
+  if (mPostOffice.size() == 0)
+    ret = Mail(0, 0);
+  else {
+    ret = mPostOffice.front();
     mPostOffice.pop();
-    if(mPostOffice.size()==0) eventReset(&mOMGMail);
+    if (mPostOffice.size() == 0)
+      eventReset(&mOMGMail);
   }
   mutexUnlock(&mMutex);
   return ret;
 }
 
-Mail Mailbox::waitForMail()
-{
+Mail Mailbox::waitForMail() {
   eventWaitFor(&mOMGMail);
   return checkMailbox();
 }

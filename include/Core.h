@@ -14,10 +14,10 @@ namespace eda {
 #define CORE_DISASSEMBLE 1
 #define CORE_ANALYSE 2
 
-class Core: public Observer {
+class Core {
 public:
   Core();
-  Core(Bank* bank);     //, Server* server(Server is in a different thread)
+  Core(Bank* bank); //, Server* server(Server is in a different thread)
   virtual ~Core();
   virtual void update();
   virtual void test();

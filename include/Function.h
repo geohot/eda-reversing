@@ -20,15 +20,22 @@ namespace eda {
 
 class Branch {
 public:
-  Branch(int type, Data from, Data to): mType(type), mFrom(from), mTo(to) {}
-  std::string getXML()
-  {
+  Branch(int type, Data from, Data to) :
+    mType(type), mFrom(from), mTo(to) {
+  }
+  std::string getXML() {
     std::stringstream ss;
     ss << std::hex << "<line color=\"";
-    switch(mType) {
-      case BRANCH_FOLLOW: ss << "blue"; break;
-      case BRANCH_CONDITIONFAIL: ss << "red"; break;
-      case BRANCH_CONDITIONPASS: ss << "green"; break;
+    switch (mType) {
+    case BRANCH_FOLLOW:
+      ss << "blue";
+      break;
+    case BRANCH_CONDITIONFAIL:
+      ss << "red";
+      break;
+    case BRANCH_CONDITIONPASS:
+      ss << "green";
+      break;
     }
     ss << "\" to=\"" << mTo << "\" from=\"" << mFrom << "\"></line>";
     return ss.str();
@@ -40,14 +47,15 @@ public:
 
 class Function {
 public:
-  Function(Data start): mStart(start) {}
+  Function(Data start) :
+    mStart(start) {
+  }
   Data mStart;
   //std::vector<std::pair<Data, Data> > mSegments;
-  std::map<Data,Instruction *> mInstructions;
+  std::map<Data, Instruction *> mInstructions;
   std::vector<Branch> mBranchData;
 };
 
 }
-
 
 #endif /* EDA_FUNCTION_H_ */

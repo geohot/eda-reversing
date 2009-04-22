@@ -7,20 +7,18 @@
 
 #include "../Controller/ARM/InstructionARM.h"
 
-void InstructionARM_debugPrint(eda::InstructionARM *test)
-{
+void InstructionARM_debugPrint(eda::InstructionARM *test) {
   test->mString.consolePrint();
   test->mString.debugPrint();
   test->mAction.debugPrint();
 }
 
-int InstructionARM_test()
-{
+int InstructionARM_test() {
   /*eda::InstructionARM test(0xE3A00000);
-  InstructionARM_debugPrint(&test);
+   InstructionARM_debugPrint(&test);
 
-  eda::InstructionARM test2(0xE8BD8010);
-  InstructionARM_debugPrint(&test2);*/
+   eda::InstructionARM test2(0xE8BD8010);
+   InstructionARM_debugPrint(&test2);*/
 
   eda::InstructionARM test2(0xE8BD8010);
   test2.mString.consolePrint();

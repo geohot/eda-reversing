@@ -10,193 +10,192 @@
 #include <string>
 #include "ParsedInstruction.h"
 
-typedef union
-{
-  struct          //Misc instructions
+typedef union {
+  struct //Misc instructions
   {
-    unsigned immed : 8;             //could be register too
-    unsigned rotate : 4;
-    unsigned Rd : 4;        //0000
-    unsigned mb_c : 1;
-    unsigned mb_x : 1;
-    unsigned mb_s : 1;
-    unsigned mb_f : 1;
-    unsigned : 1;
-    unsigned L : 1;
-    unsigned R : 1;
-    unsigned : 2;   //10
-    unsigned I : 1;
-    unsigned : 2;   //00
-    unsigned cond : 4;
+    unsigned immed :8; //could be register too
+    unsigned rotate :4;
+    unsigned Rd :4; //0000
+    unsigned mb_c :1;
+    unsigned mb_x :1;
+    unsigned mb_s :1;
+    unsigned mb_f :1;
+    unsigned :1;
+    unsigned L :1;
+    unsigned R :1;
+    unsigned :2; //10
+    unsigned I :1;
+    unsigned :2; //00
+    unsigned cond :4;
   } mi;
-  struct          //Multiply extra loads stores
+  struct //Multiply extra loads stores
   {
-    unsigned addr_mode_lo : 4;
-    unsigned : 1;   //1
-    unsigned H : 1;
-    unsigned S : 1;
-    unsigned : 1;   //1
-    unsigned addr_mode_hi : 4;
-    unsigned Rd : 4;
-    unsigned Rn : 4;
-    unsigned L : 1;
-    unsigned W : 1;
-    unsigned I : 1;
-    unsigned U : 1;
-    unsigned P : 1;
-    unsigned : 3;   //000
-    unsigned cond : 4;
+    unsigned addr_mode_lo :4;
+    unsigned :1; //1
+    unsigned H :1;
+    unsigned S :1;
+    unsigned :1; //1
+    unsigned addr_mode_hi :4;
+    unsigned Rd :4;
+    unsigned Rn :4;
+    unsigned L :1;
+    unsigned W :1;
+    unsigned I :1;
+    unsigned U :1;
+    unsigned P :1;
+    unsigned :3; //000
+    unsigned cond :4;
   } mels;
-  struct          //Data processing immediate shift
+  struct //Data processing immediate shift
   {
-    unsigned Rm : 4;
-    unsigned : 1;   //0
-    unsigned shift : 2;
-    unsigned shift_imm : 5;
-    unsigned Rd : 4;
-    unsigned Rn : 4;
-    unsigned S : 1;
-    unsigned opcode : 4;
-    unsigned : 3;   //000
-    unsigned cond : 4;
+    unsigned Rm :4;
+    unsigned :1; //0
+    unsigned shift :2;
+    unsigned shift_imm :5;
+    unsigned Rd :4;
+    unsigned Rn :4;
+    unsigned S :1;
+    unsigned opcode :4;
+    unsigned :3; //000
+    unsigned cond :4;
   } dpis;
-  struct          //Data processing register shift
+  struct //Data processing register shift
   {
-    unsigned Rm : 4;
-    unsigned : 1;   //1
-    unsigned shift : 2;
-    unsigned : 1;   //0
-    unsigned Rs : 4;
-    unsigned Rd : 4;
-    unsigned Rn : 4;
-    unsigned S : 1;
-    unsigned opcode : 4;
-    unsigned : 3;   //000
-    unsigned cond : 4;
+    unsigned Rm :4;
+    unsigned :1; //1
+    unsigned shift :2;
+    unsigned :1; //0
+    unsigned Rs :4;
+    unsigned Rd :4;
+    unsigned Rn :4;
+    unsigned S :1;
+    unsigned opcode :4;
+    unsigned :3; //000
+    unsigned cond :4;
   } dprs;
-  struct          //Data processing immediate
+  struct //Data processing immediate
   {
-    unsigned immed : 8;
-    unsigned rotate : 4;
-    unsigned Rd : 4;
-    unsigned Rn : 4;
-    unsigned S : 1;
-    unsigned opcode : 4;
-    unsigned : 3;   //001
-    unsigned cond : 4;
+    unsigned immed :8;
+    unsigned rotate :4;
+    unsigned Rd :4;
+    unsigned Rn :4;
+    unsigned S :1;
+    unsigned opcode :4;
+    unsigned :3; //001
+    unsigned cond :4;
   } dpi;
-  struct          //Move immediate to status register
+  struct //Move immediate to status register
   {
-    unsigned immed : 8;
-    unsigned rotate : 4;
-    unsigned SBO : 4;
-    unsigned Mask : 4;
-    unsigned : 2;   //10
-    unsigned R : 1;
-    unsigned : 2;   //10
-    unsigned : 3;   //001
-    unsigned cond : 4;
+    unsigned immed :8;
+    unsigned rotate :4;
+    unsigned SBO :4;
+    unsigned Mask :4;
+    unsigned :2; //10
+    unsigned R :1;
+    unsigned :2; //10
+    unsigned :3; //001
+    unsigned cond :4;
   } misr;
-  struct          //Load/store immediate offset
+  struct //Load/store immediate offset
   {
-    unsigned immed : 12;
-    unsigned Rd : 4;
-    unsigned Rn : 4;
-    unsigned L : 1;
-    unsigned W : 1;
-    unsigned B : 1;
-    unsigned U : 1;
-    unsigned P : 1;
-    unsigned : 3;   //010
-    unsigned cond : 4;
+    unsigned immed :12;
+    unsigned Rd :4;
+    unsigned Rn :4;
+    unsigned L :1;
+    unsigned W :1;
+    unsigned B :1;
+    unsigned U :1;
+    unsigned P :1;
+    unsigned :3; //010
+    unsigned cond :4;
   } lsio;
-  struct          //Load/store register offset
+  struct //Load/store register offset
   {
-    unsigned Rm : 4;
-    unsigned : 1;   //0
-    unsigned shift : 2;
-    unsigned shift_imm : 5;
-    unsigned Rd : 4;
-    unsigned Rn : 4;
-    unsigned L : 1;
-    unsigned W : 1;
-    unsigned B : 1;
-    unsigned U : 1;
-    unsigned P : 1;
-    unsigned : 3;   //011
-    unsigned cond : 4;
+    unsigned Rm :4;
+    unsigned :1; //0
+    unsigned shift :2;
+    unsigned shift_imm :5;
+    unsigned Rd :4;
+    unsigned Rn :4;
+    unsigned L :1;
+    unsigned W :1;
+    unsigned B :1;
+    unsigned U :1;
+    unsigned P :1;
+    unsigned :3; //011
+    unsigned cond :4;
   } lsro;
-  struct          //Load/store multiple
+  struct //Load/store multiple
   {
-    unsigned register_list : 16;
-    unsigned Rn : 4;
-    unsigned L : 1;
-    unsigned W : 1;
-    unsigned S : 1;
-    unsigned U : 1;
-    unsigned P : 1;
-    unsigned : 3;   //100
-    unsigned cond : 4;
+    unsigned register_list :16;
+    unsigned Rn :4;
+    unsigned L :1;
+    unsigned W :1;
+    unsigned S :1;
+    unsigned U :1;
+    unsigned P :1;
+    unsigned :3; //100
+    unsigned cond :4;
   } lsm;
-  struct          //Branch and branch with link
+  struct //Branch and branch with link
   {
-    unsigned offset : 24;
-    unsigned L : 1;
-    unsigned : 3;   //101
-    unsigned cond : 4;
+    unsigned offset :24;
+    unsigned L :1;
+    unsigned :3; //101
+    unsigned cond :4;
   } bbl;
-  struct          //Coprocessor load/store and double register transfers
+  struct //Coprocessor load/store and double register transfers
   {
-    unsigned offset : 8;
-    unsigned cp_num : 4;
-    unsigned CRd : 4;
-    unsigned Rn : 4;
-    unsigned L : 1;
-    unsigned W : 1;
-    unsigned N : 1;
-    unsigned U : 1;
-    unsigned P : 1;
-    unsigned : 3;   //110
-    unsigned cond : 4;
+    unsigned offset :8;
+    unsigned cp_num :4;
+    unsigned CRd :4;
+    unsigned Rn :4;
+    unsigned L :1;
+    unsigned W :1;
+    unsigned N :1;
+    unsigned U :1;
+    unsigned P :1;
+    unsigned :3; //110
+    unsigned cond :4;
   } cls;
-  struct          //Coprocessor data processing
+  struct //Coprocessor data processing
   {
-    unsigned CRm : 4;
-    unsigned : 1;   //0
-    unsigned opcode2 : 3;
-    unsigned cp_num : 4;
-    unsigned CRd : 4;
-    unsigned CRn : 4;
-    unsigned opcode1 : 4;
-    unsigned : 4;   //1110
-    unsigned cond : 4;
+    unsigned CRm :4;
+    unsigned :1; //0
+    unsigned opcode2 :3;
+    unsigned cp_num :4;
+    unsigned CRd :4;
+    unsigned CRn :4;
+    unsigned opcode1 :4;
+    unsigned :4; //1110
+    unsigned cond :4;
   } cdp;
-  struct          //Coprocessor register transfers
+  struct //Coprocessor register transfers
   {
-    unsigned CRm : 4;
-    unsigned : 1;   //1
-    unsigned opcode2 : 3;
-    unsigned cp_num : 4;
-    unsigned Rd : 4;
-    unsigned CRn : 4;
-    unsigned L : 1;
-    unsigned opcode1 : 3;
-    unsigned : 4;   //1110
-    unsigned cond : 4;
+    unsigned CRm :4;
+    unsigned :1; //1
+    unsigned opcode2 :3;
+    unsigned cp_num :4;
+    unsigned Rd :4;
+    unsigned CRn :4;
+    unsigned L :1;
+    unsigned opcode1 :3;
+    unsigned :4; //1110
+    unsigned cond :4;
   } crt;
-  struct          //Software interrupt
+  struct //Software interrupt
   {
-    unsigned swi_number : 24;
-    unsigned : 4;   //1111
-    unsigned cond : 4;
+    unsigned swi_number :24;
+    unsigned :4; //1111
+    unsigned cond :4;
   } swi;
-  struct          //generic
+  struct //generic
   {
-    unsigned : 12;
-    unsigned Rd : 4;
-    unsigned Rn : 4;
-    unsigned : 8;
-    unsigned cond : 4;
+    unsigned :12;
+    unsigned Rd :4;
+    unsigned Rn :4;
+    unsigned :8;
+    unsigned cond :4;
   } generic;
   Data opcode;
 } templateInstructionARM;
@@ -206,10 +205,13 @@ typedef union
 #define opcodesARM(x) std::make_pair((std::string)opcodesARM_s[x], DT_OPCODE)
 #define shiftsARM(x) std::make_pair((std::string)shiftsARM_s[x], DT_SUBOPCODE)
 
-const char conditionsARM_s[16][3]={"EQ","NE","HS","LO","MI","PL","VS","VC","HI","LS","GE","LT","GT","LE","",""};
-const char registersARM_s[18][5]={"R0","R1","R2","R3","R4","R5","R6","R7","R8","R9","R10","R11","R12","SP","LR","PC","CPSR","SPSR"};
-const char opcodesARM_s[16][4]={"AND","EOR","SUB","RSB","ADD","ADC","SBC","RSC","TST","TEQ","CMP","CMN","ORR","MOV","BIC","MVN"};
-const char shiftsARM_s[4][4]={"LSL","LSR","ASR","ROR"};
+const char conditionsARM_s[16][3] = { "EQ", "NE", "HS", "LO", "MI", "PL", "VS",
+    "VC", "HI", "LS", "GE", "LT", "GT", "LE", "", "" };
+const char registersARM_s[18][5] = { "R0", "R1", "R2", "R3", "R4", "R5", "R6",
+    "R7", "R8", "R9", "R10", "R11", "R12", "SP", "LR", "PC", "CPSR", "SPSR" };
+const char opcodesARM_s[16][4] = { "AND", "EOR", "SUB", "RSB", "ADD", "ADC",
+    "SBC", "RSC", "TST", "TEQ", "CMP", "CMN", "ORR", "MOV", "BIC", "MVN" };
+const char shiftsARM_s[4][4] = { "LSL", "LSR", "ASR", "ROR" };
 
 //execution modes
 #define M_USER 0x10
@@ -225,46 +227,32 @@ const char shiftsARM_s[4][4]={"LSL","LSR","ASR","ROR"};
 #define SHIFT_ASR 2
 #define SHIFT_ROR 3
 
-typedef struct
-{
+typedef struct {
   //byte
-  unsigned M : 5; //Mode
-  unsigned T : 1; //Thumb
-  unsigned F : 1; //FIQ interrupts
-  unsigned I : 1; //IRQ interrupts
+  unsigned M :5; //Mode
+  unsigned T :1; //Thumb
+  unsigned F :1; //FIQ interrupts
+  unsigned I :1; //IRQ interrupts
   //byte
-  unsigned A : 1;         //v6 Disable inprecise data aborts
-  unsigned E : 1;         //v6 Endianness
-  unsigned : 6;
+  unsigned A :1; //v6 Disable inprecise data aborts
+  unsigned E :1; //v6 Endianness
+  unsigned :6;
   //byte
-  unsigned GE : 4;        //v6 greater than or equal
-  unsigned : 4;
+  unsigned GE :4; //v6 greater than or equal
+  unsigned :4;
   //byte
-  unsigned J : 1;         //v6 Jazelle
-  unsigned : 2;
-  unsigned Q : 1;
-  unsigned V : 1; //oVerflow
-  unsigned C : 1; //Carry
-  unsigned Z : 1; //Zero
-  unsigned N : 1; //Negative
+  unsigned J :1; //v6 Jazelle
+  unsigned :2;
+  unsigned Q :1;
+  unsigned V :1; //oVerflow
+  unsigned C :1; //Carry
+  unsigned Z :1; //Zero
+  unsigned N :1; //Negative
 } templateRegisterCPSR;
 
-const char encodingsARM[15][0x10]={
-        "ARM_UNKNOWN",
-        "ARM_MI",
-        "ARM_MELS",
-        "ARM_DPIS",
-        "ARM_DPRS",
-        "ARM_DPI",
-        "ARM_MISR",
-        "ARM_LSIO",
-        "ARM_LSRO",
-        "ARM_LSM",
-        "ARM_BBL",
-        "ARM_CLS",
-        "ARM_CDP",
-        "ARM_CRT",
-        "ARM_SWI"};
+const char encodingsARM[15][0x10] = { "ARM_UNKNOWN", "ARM_MI", "ARM_MELS",
+    "ARM_DPIS", "ARM_DPRS", "ARM_DPI", "ARM_MISR", "ARM_LSIO", "ARM_LSRO",
+    "ARM_LSM", "ARM_BBL", "ARM_CLS", "ARM_CDP", "ARM_CRT", "ARM_SWI" };
 
 #define OPCODE_AND 0x0
 #define OPCODE_EOR 0x1
@@ -305,8 +293,5 @@ const char encodingsARM[15][0x10]={
 #define REG_PC 15
 #define REG_CPSR 16
 #define REG_SPSR 17
-
-
-
 
 #endif /* EDA_TEMPLATEARM_H_ */

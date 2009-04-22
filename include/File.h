@@ -11,15 +11,14 @@
 
 namespace eda {
 
-class File
-{
+class File {
 public:
   File();
   Data& operator[](int changelistNumber);
   void set(int changelistNumber, Data data);
 private:
   std::map<int, Data> mStore;
-  std::string mName;         //add accessors and mutators for this
+  std::string mName; //add accessors and mutators for this
 };
 
 }

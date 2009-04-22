@@ -14,7 +14,7 @@
 #define DATA_PATH "Z:\\EDA\\eda-reversing\\data\\"
 //#define DATA_PATH "D:\\eworkspace\\eda\\Debug\\data\\"
 #else
-#define DATA_PATH "/root/EDA/eda-reversing/data/"
+#define DATA_PATH "../eda-reversing/data/"
 #endif
 
 #define Data unsigned int
@@ -35,6 +35,5 @@
 
 #define rol(x,n) (x<<n | (x>>(32-n)))
 #define ror(x,n) (x>>n | (x<<(32-n)))
-
 
 #endif /* EDA_MACROS_H_ */

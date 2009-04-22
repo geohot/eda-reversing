@@ -15,8 +15,7 @@ namespace eda {
 class Memory;
 class Location;
 
-class Changelist
-{
+class Changelist {
 public:
   Changelist(int changelistNumber);
   void commit(RegisterFile *r, Memory *m);
