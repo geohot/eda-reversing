@@ -134,6 +134,8 @@ void FrontEndServer::serve(int fd)
 
 #define sendString(x,y) send(x, y, strlen(y), 0)
 
+
+
 bool FrontEndServer::lexer(int fd, std::string cmd) {
   std::vector<std::string> argv;
   size_t start = cmd.find_first_not_of("/", 0);
@@ -146,84 +148,24 @@ bool FrontEndServer::lexer(int fd, std::string cmd) {
   /*info << "lexed " << argv.size() << std::endl;
    for(int a=0;a<argv.size();a++) info << "[" << a << "] " << argv[a] << std::endl;*/
   if (argv[0] == "Bank" && argv.size() >= 2) {
-    mBank->lock(LOCKED_SERVER);
-    if (argv[1] == "getFunctionList") {
-      serveHeaders(fd, "application/xml");
-      std::stringstream response;
-      response << XML_HEADER << "<top>" << std::endl;
-
-      FunctionIterator walk = mBank->mem()->mFunctionStore.begin();
-      while (walk != mBank->mem()->mFunctionStore.end()) {
-        response << std::hex << "<function address=\"" << walk->first << "\">"
-            << mBank->mem()->getName(walk->first) << "</function>" << std::endl;
-        ++walk;
-      }
-
-      response << "</top>" << std::endl;
-      sendString(fd, response.str().c_str());
-    } else if (argv[1] == "getFunction" && argv.size() >= 3) {
-      serveHeaders(fd, "application/xml");
-
-      std::stringstream response;
-      //response << XML_HEADER << "<top><instructiondata>" << std::endl;
-
-      Data addr;
-      if (!mBank->mem()->lookupName(argv[2], &addr))
-        goto fail;
-
-      Function *f = mBank->mem()->inFunction(addr);
-      std::map<Data, Instruction *>::iterator walk = f->mInstructions.begin();
-      response << "<html><div class=\"codebox\" id=\""
-          << mBank->mem()->getName(walk->first) << "\">" << std::endl;
-
-      //next line should really get name
-      response << std::hex << "<div class=\"addr\">" << mBank->mem()->getName(
-          walk->first) << "</div>" << std::endl;
-
-      while (walk != f->mInstructions.end()) {
-        if (walk->second->mLandingPad == true) {
-          response << "</div>" << std::endl << "<div class=\"codebox\" id=\""
-              << mBank->mem()->getName(walk->first) << "\">" << std::endl;
-          response << std::hex << "<div class=\"addr\">"
-              << mBank->mem()->getName(walk->first) << "</div>" << std::endl;
-        }
-        response << walk->second->mString.webPrint(walk->first, mBank->mem());
-        ++walk;
-      }
-      response << "</div></html>";
-      /*response << "</instructiondata>" << std::endl;
-       response << "</top>" << std::endl;*/
-      sendString(fd, response.str().c_str());
-    } else if (argv[1] == "getFunctionBranchData" && argv.size() >= 3) {
-      serveHeaders(fd, "application/xml");
-      std::stringstream response;
-      response << XML_HEADER << "<top>" << std::endl;
-
-      Data addr;
-      if (!mBank->mem()->lookupName(argv[2], &addr))
-        goto fail;
-
-      Function *f = mBank->mem()->inFunction(addr);
-      std::vector<Branch>::iterator walk = f->mBranchData.begin();
-      while (walk != f->mBranchData.end()) {
-        response << (*walk).getXML() << std::endl;
-        ++walk;
-      }
-      response << "</top>";
-      sendString(fd, response.str().c_str());
-    } else if (argv[1] == "rename" && argv.size() >= 4) {
-      Data addr;
-      if (mBank->mem()->lookupName(argv[2], &addr)) {
-        mBank->mem()->setName(addr, argv[3]);
-      }
-    }
-    fail: mBank->unlock(LOCKED_SERVER);
+    serveHeaders(fd, "application/xml");
+    std::stringstream response;
+    if (argv[1] == "getFunctionList")
+      mCommands->getFunctionList(response, argv);
+    else if (argv[1] == "getFunction")
+      mCommands->getFunction(response, argv);
+    else if (argv[1] == "getFunctionBranchData")
+      mCommands->getFunctionBranchData(response, argv);
+    else if (argv[1] == "rename")
+      mCommands->rename(response, argv);
+    sendString(fd, response.str().c_str());
   }
 
   return true;
 }
 
 void FrontEndServer::runLoop() {
+  mCommands = new Commands(mBank, mCore); //must be done after attach
   mBank->lock(LOCKED_SERVER);
   mBank->mem()->loadFile("bootrom", 0x400000);
   mBank->mem()->importIDC("bootrom.idc");

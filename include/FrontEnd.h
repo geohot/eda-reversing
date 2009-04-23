@@ -10,6 +10,7 @@
 #include "macros.h"
 #include "Bank.h"
 #include "Core.h"
+#include "Commands.h"
 
 #include <string>
 
@@ -21,10 +22,11 @@ public:
   FrontEnd(Bank *bank);
   virtual ~FrontEnd();
   void attach(Core *);
-  void launch();  //needed to fix linux issues
+  void launch(); //needed to fix linux issues
 protected:
   Mailbox *mCore;
   Bank *mBank;
+  Commands *mCommands;
 private:
   virtual void runLoop();
   static void entryPoint(void *);

@@ -20,6 +20,7 @@ SET(EDA_SRCS
 ./Model/Memory.cc
 ./Model/RegisterFile.cc
 ./Model/ParsedInstruction.cc
+./View/Commands.cc
 ./View/FrontEndServer.cc
 ./View/FrontEndConsole.cc
 ./View/FrontEnd.cc

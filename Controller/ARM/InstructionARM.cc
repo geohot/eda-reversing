@@ -13,7 +13,9 @@ InstructionARM::InstructionARM(Data opcode) {
   templateInstructionARM *i = (templateInstructionARM *) &mOpcode;
   mConditional = !(((i->generic.cond) == 0xE) || ((i->generic.cond) == 0xF)); //always run
   mBranch = false;
+  mLinkedBranch = false;
   mReturn = false;
+  mLandingPad = false;
   if (!init()) {
     mString.add("XXX", DT_OPCODE);
     mString << conditionsARM(i->generic.cond) << " ";

@@ -17,10 +17,9 @@ window.addEventListener('load', function(e) {
 
   refreshFunctionList();
 
-  if(location.hash!=null&&location.hash!="")		//for refresh
-	{
-		refreshFunction(location.hash.replace("#",""));
-	}
+  if(location.hash!=null&&location.hash!="") {		//for refresh
+    refreshFunction(location.hash.replace("#",""));
+  }
 }, false);
 
 //*****************************************************************************
@@ -34,22 +33,18 @@ var rbox;
 
 var renameOldValue;
 
-function terminateRename()
-{
-  if(renaming!=null)
-  {
+function terminateRename() {
+  if(renaming!=null) {
     renaming.innerHTML=renameOldValue;
     renaming=null;
   }
 }
 
-function handlerKeyPress(e){
+function handlerKeyPress(e) {
   //alert(e.keyCode);
   //alert(String.fromCharCode(e.keyCode));
-  if(e.keyCode==110)  //'n' for rename
-  {
-    if(renaming==null && selected!=null && (selected.className=="location" || selected.className=="addr"))
-    {
+  if(e.keyCode==110) {  //'n' for rename
+    if(renaming==null && selected!=null && (selected.className=="location" || selected.className=="addr")) {
       renaming=selected;
       renameOldValue=selected.innerHTML;
       rbox=document.createElement('input');
@@ -62,18 +57,15 @@ function handlerKeyPress(e){
       e.returnValue=false;
     }
   }
-  if(e.keyCode==13)     //enter
-  {
-    if(renaming!=null && rbox.value.length>0)
-    {
+  if(e.keyCode==13) {    //enter
+    if(renaming!=null && rbox.value.length>0) {
       renaming.innerHTML=rbox.value;
       //push this to server
       sendRename(renameOldValue, renaming.innerHTML);
       renaming=null;
     }
   }
-  if(e.keyCode==96)   //bootleg escape
-  {
+  if(e.keyCode==96) {  //bootleg escape
     terminateRename();
   }
   /*if(e.keyCode==32)
@@ -110,26 +102,22 @@ setInterval(function() {
 
 
 var selected=null;
-function setSelectedStyle(t)
-{
+function setSelectedStyle(t) {
   t.style.backgroundColor="orange";
   t.style.color="black";
 }
 
-function resetSelectedStyle(t)
-{
+function resetSelectedStyle(t) {
   t.style.backgroundColor="";
   t.style.color="";
 }
 
-function handleMousedownNavigate(e)
-{
+function handleMousedownNavigate(e) {
   if(selected!=null)
     resetSelectedStyle(selected);
   
   //alert(e.target.className);
-  if(e.target.className=="location" || e.target.className=="addr")
-  {
+  if(e.target.className=="location" || e.target.className=="addr") {
     selected=e.target;
     setSelectedStyle(selected);
   }
@@ -139,8 +127,7 @@ function handleMousedownNavigate(e)
 
 window.addEventListener('dblclick', function(e) {
   //alert("got double click");
-  if(e.target.className=="location")
-  {
+  if(e.target.className=="location") {
     refreshFunction(selected.innerHTML);
   }
 },false);
@@ -150,15 +137,13 @@ window.addEventListener('dblclick', function(e) {
 //*****************************************************************************
 
 
-function sendRename(a,b)
-{
+function sendRename(a,b) {
   var req = new XMLHttpRequest();
   req.open("GET", "Bank/rename/"+a+"/"+b, true); req.send("");
 }
 
-function refreshFunction(address)
 //pull the function instructions+branch tree down from the server
-{
+function refreshFunction(address) {
   //alert("refreshfunction "+address);
 
   onPage=document.getElementById(address);
@@ -207,9 +192,8 @@ function refreshFunction(address)
   location.hash=address;
 }
 
-function refreshFunctionList()
 // pull the function list from the server
-{
+function refreshFunctionList() {
   req = new XMLHttpRequest()
   req.open("GET", "Bank/getFunctionList", true);
   req.send("");
@@ -242,19 +226,16 @@ function refreshFunctionList()
 
 var glideInterval;
 
-function glide()
-{
+function glide() {
   var ratiox,ratioy;
   var glideRate=50;  //set gliderate here
 
-  if(Math.abs(gx-rx)<=glideRate && Math.abs(gy-ry)<=glideRate)
-  {
+  if(Math.abs(gx-rx)<=glideRate && Math.abs(gy-ry)<=glideRate) {
     rx=gx;
     ry=gy;
     clearInterval(glideInterval);
   }
-  else
-  {
+  else {
     ratiox=(gx-rx)/Math.abs((gx-rx)+(gy-ry));
     ratioy=(gy-ry)/Math.abs((gx-rx)+(gy-ry));
 
@@ -272,14 +253,14 @@ var x,y;
 var rx,ry;
 var moving;
 
-function mouseWheelHandler(e){
+function mouseWheelHandler(e) {
   //alert("Scroll");
   //alert(navigator.userAgent);
   var ue=navigator.userAgent.toLowerCase()
   if(ue.indexOf("chrome") != -1)
     ry=(ry+e.wheelDelta/120);   //for chrome
   else if(ue.indexOf("firefox") != -1)
-    ry=ry+(e.detail*40);         //for firefox
+    ry=ry-(e.detail*40);         //for firefox
   else
     ry=ry+e.wheelDelta;         //for safari
 
@@ -296,8 +277,7 @@ function movescreen(e) {
   updateScreen();
 }
 
-function updateScreen()
-{
+function updateScreen() {
   var el = document.getElementById('mega');
   el.style.left=rx+"px";
   el.style.top=ry+"px";
@@ -306,9 +286,8 @@ function updateScreen()
 window.addEventListener('mousedown', function(e) {
   terminateRename();
   if(e.target.id=="root" || 
-    e.target.parentNode.getAttribute("class")=="frame" ||
-    e.target.getAttribute("class")=="bg")
-  {
+      e.target.parentNode.getAttribute("class")=="frame" ||
+      e.target.getAttribute("class")=="bg") {
     x=e.clientX;
     y=e.clientY;
     window.addEventListener('mousemove', movescreen, false);
@@ -320,8 +299,7 @@ window.addEventListener('mousedown', function(e) {
 window.addEventListener('mouseup', function(e) {
   if(mode==1) {
     window.removeEventListener('mousemove', movescreen, false);
-    if(moving!=1)
-    {
+    if(moving!=1) {
       handleMousedownNavigate(e);
     }
     moving=0;
@@ -335,19 +313,19 @@ window.addEventListener('mouseup', function(e) {
 
 //place the codeboxes and draw the lines
 
+var nodes;  //so I can get debug data on it
 
 function graphDraw(data, divlist)
 {
   //get all the boxes on the field
-  var nodes = new Array();
+  nodes = new Array();
   var lines = new Array();  //memory is cheap
   var segments = new Array(); //segments[end]=start;
  
   firstaddr=-1;
  
   for(a=0;a<divlist.length;a++) {
-    if(divlist[a].nodeType==1 && divlist[a].childNodes.length>3)
-    {
+    if(divlist[a].nodeType==1 && divlist[a].childNodes.length>3)  {
       //alert(divlist[a].nodeName);
       //alert(divlist[a].childNodes[3].className);
       //alert(divlist[a].childNodes[2].id);
@@ -367,11 +345,9 @@ function graphDraw(data, divlist)
     }
   }
  
-  for(a=0;a<data.length;a++)
-  {
+  for(a=0;a<data.length;a++) {
     m=data[a].attributes;
-    if(m)
-    {
+    if(m) {
       //[0] is color, [1] is to, [2] is from
       if(nodes[segments[m[2].value]]==null) alert(m[2].value + "  "+segments[m[2].value]);
       nodes[segments[m[2].value]].children.push(m[1].value);
@@ -386,10 +362,8 @@ function graphDraw(data, divlist)
 
 //place all childless nodes in bottom level
   var inLevel = new Array();
-  for(a in nodes)
-  {
-    if(nodes[a].children.length==0)
-    {
+  for(a in nodes) {
+    if(nodes[a].children.length==0) {
       nodes[a].level=0;
       inLevel.push(a);
     }
@@ -402,11 +376,9 @@ function graphDraw(data, divlist)
 //create level array
   var level = new Array();
   
-  for(a in nodes)
-  {
+  for(a in nodes) {
     //alert(nodes[a].level);
-    if(level[nodes[a].level]==null)
-    {
+    if(level[nodes[a].level]==null) {
       /*level[nodes[a].level]=document.createElement("div");
       level[nodes[a].level].className="level";
       level[nodes[a].level].id="L_"+nodes[a].level;*/
@@ -423,8 +395,7 @@ function graphDraw(data, divlist)
 
 //sort levels, ghetto crossing minimization
   var levelsSorted = new Array();
-  for(a=0;a<level.length;a++)
-  {
+  for(a=0;a<level.length;a++) {
     levelsSorted[a]=level[a].sort();
   }
 
@@ -437,16 +408,13 @@ function graphDraw(data, divlist)
 //draw the levels
   //levels start minus
   var levelDiv = new Array();
-  for(a=(levelsSorted.length-1);a>=0;a--)
-  {
+  for(a=(levelsSorted.length-1);a>=0;a--) {
     if(levelsSorted[a]==null) alert("level "+a+" not found");
-    else
-    {
+    else {
       levelDiv[a]=document.createElement("div");
       levelDiv[a].className="level";
       levelDiv[a].id="L_"+a;
-      for(n=0;n<levelsSorted[a].length;n++)
-      {
+      for(n=0;n<levelsSorted[a].length;n++) {
         //alert(levelsSorted[a][n]);
         levelDiv[a].appendChild(nodes[levelsSorted[a][n]].box);
       }
@@ -457,28 +425,23 @@ function graphDraw(data, divlist)
 //X placement here
 
 //populate node xwidths
-  for(a in nodes)
-  {
+  for(a in nodes) {
     nodes[a].xwidth=nodes[a].box.offsetWidth; //since boxes are placed
   }
 //place bottom node(s)
-  for(a in levelsSorted[0])
-  {
+  for(a in levelsSorted[0]) {
     nodes[levelsSorted[0][a]].xcenter=500;
     nodes[levelsSorted[0][a]].xweight=1;
   }
 
 //place higher up nodes
 //for each level
-  for(a=1;a<level.length;a++)
-  {
+  for(a=1;a<level.length;a++) {
     //for each node in that level
-    for(b=0;b<levelsSorted[a].length;b++)
-    {
+    for(b=0;b<levelsSorted[a].length;b++) {
       //get average of all children of b placements
       var averageXCenter=0, averageXCount=0;
-      for(c in nodes[levelsSorted[a][b]].children)
-      {
+      for(c in nodes[levelsSorted[a][b]].children) {
         averageXCenter+=nodes[nodes[levelsSorted[a][b]].children[c]].xcenter;
         averageXCount++;
       }
@@ -492,8 +455,7 @@ function graphDraw(data, divlist)
       //but others have a say too
       //alert("a,b "+a+" "+b);
 
-      for(c=(b-1);c>=0;c--)
-      {
+      for(c=(b-1);c>=0;c--) {
         //if(c==-1) break;
         //alert("c" + c);
         //if left edge less than last right edge
@@ -515,8 +477,7 @@ function graphDraw(data, divlist)
 
  
 //draw the lines
-  for(a in lines)
-  {
+  for(a in lines) {
     routeLine(
       ((nodes[lines[a].to].box.offsetLeft)+(nodes[lines[a].to].box.offsetWidth/2)),
       nodes[lines[a].to].box.offsetTop,
@@ -526,13 +487,10 @@ function graphDraw(data, divlist)
   }
 }
 
-function graphRenderX(nodes, levelsSorted)
-{
+function graphRenderX(nodes, levelsSorted) {
 //apply xcenters on field, hack uses marginLeft
-  for(a=0;a<levelsSorted.length;a++)
-  {
-    for(b=0;b<levelsSorted[a].length;b++)
-    {
+  for(a=0;a<levelsSorted.length;a++) {
+    for(b=0;b<levelsSorted[a].length;b++) {
       var calcpad;
       if(b==0)
         calcpad=nodes[levelsSorted[a][b]].xcenter-((nodes[levelsSorted[a][b]].xwidth)/2);
@@ -547,8 +505,7 @@ function graphRenderX(nodes, levelsSorted)
 }
 
  
-function routeLine(sx, sy, ex, ey, c)  //start has the arrow
-{
+function routeLine(sx, sy, ex, ey, c) {  //start has the arrow
   var line=new Array();
   line.push({x: sx, y: sy});
   line.push({x: sx, y: (sy+ey)/2}); //come up
@@ -558,30 +515,26 @@ function routeLine(sx, sy, ex, ey, c)  //start has the arrow
   drawlinearray(line, c);
 }
  
-function graphRemoveLoops(nodes, thisnodeindex)
-{
+function graphRemoveLoops(nodes, thisnodeindex) {
   //iterate through all children
   for(a in nodes[thisnodeindex].children)
   {
     var runChild=true;
-    for(l in nodes[thisnodeindex].lineage)  //search my lineage for this children
-    {
-      if(nodes[thisnodeindex].lineage[l]==nodes[thisnodeindex].children[a])
-      {
+    for(l in nodes[thisnodeindex].lineage) {
+      //search my lineage for this children
+      if(nodes[thisnodeindex].lineage[l]==nodes[thisnodeindex].children[a]) {
         runChild=false;
         break;
       }    
     }
-    if(runChild==false)
-    {
+    if(runChild==false) {
       //my child was found in my lineage, we have a problem
 
       var it=nodes[nodes[thisnodeindex].children[a]];
       var it_nodeindex=nodes[thisnodeindex].children[a];
 
-      for(c in it.parents)
+      for(c in it.parents) {
         //i'm not it's parent anymore
-      {
         if(it.parents[c] == thisnodeindex)
         {
           it.parents.splice(c,1);
@@ -595,8 +548,7 @@ function graphRemoveLoops(nodes, thisnodeindex)
       it.children.splice(0,0,thisnodeindex);          //and i am it's child
 
     }
-    else
-    {
+    else {
       nodes[nodes[thisnodeindex].children[a]].lineage=nodes[thisnodeindex].lineage.concat(
         nodes[nodes[thisnodeindex].children[a]].lineage, thisnodeindex);
       graphRemoveLoops(nodes, nodes[thisnodeindex].children[a]);
@@ -604,9 +556,8 @@ function graphRemoveLoops(nodes, thisnodeindex)
   }
 }
 
-function doYPlacement(nodes,level,inLevel)
+function doYPlacement(nodes,level,inLevel) {
 //i guess it's not really recursive
-{
   if(level>50)
   {
     alert("WTF");
@@ -616,11 +567,9 @@ function doYPlacement(nodes,level,inLevel)
 //build set of node indexes in level
   var inLevelnext = new Array();
 //for all nodes in this level
-  for(a in inLevel)
-  {
+  for(a in inLevel) {
     //place all nodes parents in the next level
-    for(p in nodes[inLevel[a]].parents)
-    {
+    for(p in nodes[inLevel[a]].parents) {
       nodes[nodes[inLevel[a]].parents[p]].level=level+1;
       inLevelnext.push(nodes[inLevel[a]].parents[p]);
     }
@@ -657,8 +606,7 @@ function doYPlacement(nodes,level,inLevel)
 //***************************LOW LEVEL DRAWING*********************************
 //*****************************************************************************
 
-function drawarrow(x,y,c)
-{
+function drawarrow(x,y,c) {
 	ctx=document.getElementById('line_canvas').getContext('2d');
 	ctx.beginPath();
 	if(c=="red")
@@ -674,8 +622,7 @@ function drawarrow(x,y,c)
 	ctx.fill();
 }
 
-function drawline(x,y,w,h,c)
-{
+function drawline(x,y,w,h,c) {
 	animatedctx=document.getElementById('line_canvas').getContext('2d');
 	animatedctx.beginPath();
 	//animatedctx.fillStyle=rgba(255,255,255,0);
@@ -704,8 +651,7 @@ function drawline(x,y,w,h,c)
 	animatedctx.fill();
 }
 
-function drawlinearray(a,c)		//a is {x,y}, c is the color
-{
+function drawlinearray(a,c) {		//a is {x,y}, c is the color
 	//this should draw an arrow too
 	drawarrow(a[0].x,a[0].y,c);
 
