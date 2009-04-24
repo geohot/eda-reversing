@@ -16,14 +16,18 @@ int main(int argc, char* argv[]) {
   //Server* server = new Server(bank);
   //FrontEnd* server = new FrontEnd(bank);
   FrontEnd* server = new FrontEndServer(bank);
+  //FrontEnd* console = new FrontEndConsole(bank);
+
   //FrontEndConsole has the same interface as the server,
   //  except it serves to one user on the console
 
   // make indirect attachments
   //bank->attach(server);
   server->attach(core);
-
   server->launch();
+
+  //console->attach(core);
+  //console->launch();
 
   // run application
   core->runLoop(); //this thread hangs out in the Core

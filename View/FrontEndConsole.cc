@@ -83,10 +83,18 @@ bool FrontEndConsole::lexer(string cmd) {
       ++iter;
     }
     mBank->unlock(LOCKED_SERVER);
-  } else if (argv[0] == "dumpfcache") {
+  } else if (argv[0] == "dumpnamecache") {
     mBank->lock(LOCKED_SERVER);
+
+    for(std::map<Data, std::string>::iterator a=mBank->mem()->mNames.begin();
+      a!=mBank->mem()->mNames.end();a++) {
+      cout << a->first << ": " << a->second << endl;
+    }
+
+
+
     //mBank->mFunctionCache.debugPrint();
-    cout << "broken" << endl;
+    //cout << "broken" << endl;
     mBank->unlock(LOCKED_SERVER);
   } else {
     cout << "syntax error" << endl;
@@ -100,9 +108,9 @@ void FrontEndConsole::runLoop() {
   info << "CFE is running" << endl;
   string cmd;
   //script some crap
-  lexer("loadfile bootrom 0x400000");
+  /*lexer("loadfile bootrom 0x400000");
   lexer("loadfile Memory_data 0x0");
-  lexer("analyse 0x400054");
+  lexer("analyse 0x400054");*/
   while (1) //tons of mail
   {
     //cout << "EDA> ";  //stupid threads ruin my prompt

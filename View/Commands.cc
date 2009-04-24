@@ -8,6 +8,13 @@
 
 namespace eda {
 
+int Commands::hexstrtoint(std::string in) {
+  int ret;
+  std::stringstream ss(in);
+  ss >> std::hex >> ret;
+  return ret;
+}
+
 //get a list of functions and return it to the server
 //returns xml list of all functions
 bool Commands::getFunctionList(COMMAND_PARAMS) {
@@ -86,6 +93,10 @@ bool Commands::rename(COMMAND_PARAMS) {
   Data addr;
   if (mBank->mem()->lookupName(argv[2], &addr)) {
     mBank->mem()->setName(addr, argv[3]);
+  }
+  else if(argv[2].compare(0,4,"loc_")==0) {  //unnamed
+    mBank->mem()->setName(hexstrtoint(argv[2].substr(4))
+        , argv[3]);
   }
   mBank->unlock(LOCKED_SERVER);
 }

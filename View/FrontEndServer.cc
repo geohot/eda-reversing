@@ -29,13 +29,6 @@
 
 namespace eda {
 
-int FrontEndServer::hexstrtoint(std::string in) {
-  int ret;
-  std::stringstream ss(in);
-  ss >> std::hex >> ret;
-  return ret;
-}
-
 bool FrontEndServer::serverListen()
 //open the server on port 80
 {
@@ -126,8 +119,9 @@ void FrontEndServer::serve(int fd)
     serveFile(fd, "favicon.ico", "image/x-icon");
   else if (strcmp(requestURL, "/eda.css") == 0)
     serveFile(fd, "eda.css", "text/css");
-  else if (strcmp(requestURL, "/eda.js") == 0)
-    serveFile(fd, "eda.js", "application/x-javascript");
+  else if (memcmp(requestURL, "/script/", strlen("/script/")) == 0)
+    //omg full FS read exploit
+    serveFile(fd, requestURL+1, "application/x-javascript");
   else if (!lexer(fd, requestURL))
     info << "unhandled URL" << std::endl;
 }

@@ -26,6 +26,7 @@ public:
   bool getFunctionBranchData(COMMAND_PARAMS);
   bool rename(COMMAND_PARAMS);
 private:
+  int hexstrtoint(std::string);
   Mailbox *mCore;
   Bank *mBank;
 };

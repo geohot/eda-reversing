@@ -37,12 +37,12 @@ public:
   Function* inFunction(Data addr);
   Function* addFunction(int start);
   std::map<Data, Function> mFunctionStore;
+  std::map<Data, std::string> mNames;
 private:
   //allocated memory goes here, since memory is only on one interval, bsearch=interval tree
   std::map<int, std::vector<File> > mChunks;
   //memory that isn't specifically allocated ends up here
   std::map<Data, File> mMemoryUndefined;
-  std::map<Data, std::string> mNames;
   std::map<std::string, Data> mReverseNames; //memory/speed tradeoff
   bool checkRegion(Data address, int len);
   static int fileSize(FILE *f);

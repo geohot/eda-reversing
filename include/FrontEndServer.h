@@ -18,7 +18,6 @@ public:
     FrontEnd(bank) {
   }
 private:
-  int hexstrtoint(std::string);
   bool lexer(int, std::string);
   bool serverListen();
   void runLoop();
