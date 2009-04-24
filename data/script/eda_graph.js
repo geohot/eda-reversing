@@ -133,6 +133,18 @@ function graphDraw(data, divlist)
   for(a in levelsSorted[0]) {
     nodes[levelsSorted[0][a]].xcenter=500;
     nodes[levelsSorted[0][a]].xweight=1;
+    for(c=(a-1);c>=0;c--) {
+      //if(c==-1) break;
+      //alert("c" + c);
+      //if left edge less than last right edge
+      var leftedge_this=(nodes[levelsSorted[0][c+1]].xcenter-((nodes[levelsSorted[0][c+1]].xwidth)/2));
+      var rightedge_last=(nodes[levelsSorted[0][c]].xcenter+((nodes[levelsSorted[0][c]].xwidth)/2));
+      //alert(leftedge_this+" "+rightedge_last);
+      if( leftedge_this < rightedge_last )
+      {
+        nodes[levelsSorted[0][c+1]].xcenter+=(rightedge_last-leftedge_this)+20;
+      }
+    }
   }
 
 //place higher up nodes
