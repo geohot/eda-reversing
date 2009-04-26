@@ -4,7 +4,7 @@ html {
 	/*background-image: url(grad_white.png) height: 100%;*/
 	/*background-color: ;*/
 	/*background: -webkit-gradient(linear, left top, left bottom, from(#00abeb), to(#fff), color-stop(0.5, #fff), color-stop(0.5, #66cc00));*/
-	
+
 	/*-webkit-transition: background-color .25s linear;*/
 	/*background-color: #E2F8FF;*/
 	overflow: hidden;
@@ -22,6 +22,15 @@ input {
 	font: 14px Lucida Console;
 	border-width: 0;
 	padding: 0;
+}
+
+td {
+  font: 14px Lucida Console;
+  font-family: monospace;
+}
+
+.bankbg {
+  background-color: #E2CAFF;
 }
 
 .bg {
@@ -82,6 +91,7 @@ input {
 	/*font-weight: 600;*/
 	display: inline-block;
 	vertical-align: top;
+  font-family: monospace;
 }
 
 .level {

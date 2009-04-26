@@ -11,8 +11,7 @@ var geohot;   //the debug symbol all over
 if(console!=null) geohot=console;
 else geohot.debug=function(e){}
 
-function include(fn)
-{
+function include(fn) {
   document.write('<script type="text/javascript" src="'+fn+'"></scr'+'ipt>');
 }
 
@@ -22,17 +21,29 @@ include("script/eda_graph.js");    //graph drawing algorithm
 include("script/eda_drawing.js");  //drawing routines
 
 window.addEventListener('load', function(e) {
+  //hacky, i know, find a better way to do this
+  if(document.title=="EDA")
+    initFunctionViewer();
+  else if(document.title=="EDA Bank Viewer")
+    initBankViewer();
+}, false);
 
+function initFunctionViewer() {
   geohot.debug("hello, I'm EDA");
 
   initEvents();
-
   refreshFunctionList();
 
   if(location.hash!=null&&location.hash!="") {    //for refresh
     refreshFunction(location.hash.replace("#",""));
   }
-}, false);
+}
+
+function initBankViewer() {
+  geohot.debug("hello, I'm EDA Bank Viewer");
+  document.getElementById("address").onchange=getHexData;
+  getHexData();
+}
 
 
 

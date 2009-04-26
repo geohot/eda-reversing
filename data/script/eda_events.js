@@ -16,6 +16,30 @@ function initEvents()
   moving=0;
   document.getElementById('mega').onmousedown=function(){return false};
   document.getElementById('functionlist').onmousedown=function(){return false};
+
+  window.addEventListener('mousedown', function(e) {
+    terminateRename();
+    if(e.target.id=="root" ||
+        e.target.parentNode.getAttribute("class")=="frame" ||
+        e.target.getAttribute("class")=="bg") {
+      x=e.clientX;
+      y=e.clientY;
+      window.addEventListener('mousemove', movescreen, false);
+      moving=1;
+    }
+    return false;
+  },false);
+
+  window.addEventListener('mouseup', function(e) {
+    if(mode==1) {
+      window.removeEventListener('mousemove', movescreen, false);
+      if(moving!=1) {
+        handleMousedownNavigate(e);
+      }
+      moving=0;
+    }
+  },false);
+
 }
 
 //*****************************************************************************
@@ -179,7 +203,6 @@ function mouseWheelHandler(e) {
 
 
 function movescreen(e) {
-
   rx=rx+(e.clientX-x);
   ry=ry+(e.clientY-y);
   x=e.clientX;
@@ -193,25 +216,3 @@ function updateScreen() {
   el.style.top=ry+"px";
 }
 
-window.addEventListener('mousedown', function(e) {
-  terminateRename();
-  if(e.target.id=="root" ||
-      e.target.parentNode.getAttribute("class")=="frame" ||
-      e.target.getAttribute("class")=="bg") {
-    x=e.clientX;
-    y=e.clientY;
-    window.addEventListener('mousemove', movescreen, false);
-    moving=1;
-  }
-  return false;
-},false);
-
-window.addEventListener('mouseup', function(e) {
-  if(mode==1) {
-    window.removeEventListener('mousemove', movescreen, false);
-    if(moving!=1) {
-      handleMousedownNavigate(e);
-    }
-    moving=0;
-  }
-},false);

@@ -25,6 +25,7 @@ public:
   bool getFunction(COMMAND_PARAMS);
   bool getFunctionBranchData(COMMAND_PARAMS);
   bool rename(COMMAND_PARAMS);
+  bool getMemory(COMMAND_PARAMS);
 private:
   int hexstrtoint(std::string);
   Mailbox *mCore;

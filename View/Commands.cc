@@ -6,6 +6,8 @@
 #include "Commands.h"
 #include "macros.h"
 
+#include <iomanip>
+
 namespace eda {
 
 int Commands::hexstrtoint(std::string in) {
@@ -98,6 +100,28 @@ bool Commands::rename(COMMAND_PARAMS) {
     mBank->mem()->setName(hexstrtoint(argv[2].substr(4))
         , argv[3]);
   }
+  mBank->unlock(LOCKED_SERVER);
+}
+
+//address/size/clnum
+bool Commands::getMemory(COMMAND_PARAMS) {
+  if(argv.size()<4) return false;
+  mBank->lock(LOCKED_SERVER);
+
+  response << "<tr>";
+  int addr=hexstrtoint(argv[2]);
+  int len=hexstrtoint(argv[3]);
+  int clnum=hexstrtoint(argv[4]);
+  Data curraddr;
+  for(int a=addr;a<(addr+len);a++) {
+    if((a%4)==0) curraddr=(*(mBank->mem()))[a][clnum];
+    if(a!=0 && (a%0x10)==0) response << "<tr/><tr>";
+    response << "<td>" << std::hex
+      << std::setw(2) << std::setfill('0') << (curraddr&0xFF)  << "</td>";
+    curraddr=curraddr>>8;
+  }
+  response << "<tr/>";
+
   mBank->unlock(LOCKED_SERVER);
 }
 

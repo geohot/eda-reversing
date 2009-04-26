@@ -6,7 +6,26 @@
 //****************************SERVER COMMUNICATION*****************************
 //*****************************************************************************
 
+//fetch hexdump data from the Bank
+function getHexData() {
+  var addr=document.getElementById("address").value;
+  var clnum=document.getElementById("clnum").value;
+  if(addr=="") return false;
 
+  var req = new XMLHttpRequest();
+  req.open("GET", "Bank/getMemory/"+addr+"/100/"+clnum, true); req.send("");
+
+  req.onreadystatechange = function(){
+    if(req.readyState==4) {
+      //raw memory returned as html...for now
+      document.getElementById("hex").innerHTML=req.responseText;
+    }
+  };
+
+
+}
+
+//send a rename request to the server
 function sendRename(a,b) {
   var req = new XMLHttpRequest();
   req.open("GET", "Bank/rename/"+a+"/"+b, true); req.send("");

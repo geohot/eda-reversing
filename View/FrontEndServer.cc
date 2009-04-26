@@ -114,7 +114,9 @@ void FrontEndServer::serve(int fd)
     send(fd, "<top><test>hello</test></top>", strlen(
         "<top><test>hello</test></top>"), 0);
   } else if (strcmp(requestURL, "/") == 0)
-    serveFile(fd, "eda_template.html", "text/html");
+    serveFile(fd, "eda_function.html", "text/html");
+  else if (strcmp(requestURL, "/Bank") == 0)
+    serveFile(fd, "eda_bank.html", "text/html");
   else if (strcmp(requestURL, "/favicon.ico") == 0)
     serveFile(fd, "favicon.ico", "image/x-icon");
   else if (strcmp(requestURL, "/eda.css") == 0)
@@ -152,6 +154,8 @@ bool FrontEndServer::lexer(int fd, std::string cmd) {
       mCommands->getFunctionBranchData(response, argv);
     else if (argv[1] == "rename")
       mCommands->rename(response, argv);
+    else if (argv[1] == "getMemory")
+      mCommands->getMemory(response, argv);
     sendString(fd, response.str().c_str());
   }
 
