@@ -183,6 +183,14 @@ void FrontEndServer::runLoop() {
   struct sockaddr_in cli_addr;
   //this server will be blocking for easiness
   while (1) {
+
+  /*  info << "cin good is " << (std::cin.good()) << std::endl;
+    char c;
+    while(std::cin.good()) {
+      std::cin.get(c);
+      info << "read " << c << std::endl;
+    }*/
+
     int clientSocket;
     socklen_t sin_size = sizeof(cli_addr);
 

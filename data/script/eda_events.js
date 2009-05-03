@@ -77,6 +77,7 @@ function handlerKeyPress(e) {
       renaming.appendChild(rbox);
       rbox.focus();
       e.returnValue=false;
+      e.preventDefault();
     }
   }
   if(e.keyCode==13) {    //enter
@@ -87,7 +88,7 @@ function handlerKeyPress(e) {
       renaming=null;
     }
   }
-  if(e.keyCode==96) {  //bootleg escape
+  if(e.keyCode==27) {  //bootleg escape is 96
     terminateRename();
   }
   /*if(e.keyCode==32)

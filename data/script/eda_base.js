@@ -42,6 +42,7 @@ function initFunctionViewer() {
 function initBankViewer() {
   geohot.debug("hello, I'm EDA Bank Viewer");
   document.getElementById("address").onchange=getHexData;
+  document.getElementById("clnum").onchange=getHexData;
   getHexData();
 }
 

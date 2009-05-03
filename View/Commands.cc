@@ -104,23 +104,33 @@ bool Commands::rename(COMMAND_PARAMS) {
 }
 
 //address/size/clnum
+//returns a big ugly hex string
 bool Commands::getMemory(COMMAND_PARAMS) {
   if(argv.size()<4) return false;
   mBank->lock(LOCKED_SERVER);
 
-  response << "<tr>";
+  //response << "<tr>";
   int addr=hexstrtoint(argv[2]);
   int len=hexstrtoint(argv[3]);
   int clnum=hexstrtoint(argv[4]);
   Data curraddr;
   for(int a=addr;a<(addr+len);a++) {
-    if((a%4)==0) curraddr=(*(mBank->mem()))[a][clnum];
-    if(a!=0 && (a%0x10)==0) response << "<tr/><tr>";
-    response << "<td>" << std::hex
-      << std::setw(2) << std::setfill('0') << (curraddr&0xFF)  << "</td>";
+    if((a%4)==0) {
+      if(mBank->mem()->exists(a))
+        curraddr=(*(mBank->mem()))[a][clnum];
+      else {
+        response << "XXXXXXXX";
+        a+=3;
+        continue;
+      }
+    }
+    //if(a!=0 && (a%0x10)==0) response << "<tr/><tr>";
+    /*response << "<td>" << std::hex
+      << std::setw(2) << std::setfill('0') << (curraddr&0xFF)  << "</td>";*/
+    response << std::hex << std::setw(2) << std::setfill('0') << (curraddr&0xFF);
     curraddr=curraddr>>8;
   }
-  response << "<tr/>";
+  //response << "<tr/>";
 
   mBank->unlock(LOCKED_SERVER);
 }
