@@ -217,6 +217,14 @@ function refreshFunction(address) {
   if (reqBD.readyState == 4) {
 //*****Got Response*****
   graphDraw(reqBD.responseXML.documentElement.childNodes, bigdiv.childNodes);
+  
+  onPage=document.getElementById(address);
+  if(onPage!=null) {
+    rx=(-onPage.offsetLeft)+500;
+    ry=(-onPage.offsetTop)+100;
+    updateScreen();
+  }
+  
 //******Cleanup******
   }
   }

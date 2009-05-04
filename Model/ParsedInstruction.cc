@@ -83,7 +83,7 @@ std::string ParsedInstruction::webPrint(Data address, Memory *mem)
   }
   if (endedopblock == false)
     ss << "</span>";
-  ss << "</div>" << std::endl;
+  ss << "</div>";
   return ss.str();
 }
 

@@ -6,10 +6,12 @@
 //**********************************STARTUP************************************
 //*****************************************************************************
 
-var geohot;   //the debug symbol all over
+var geohot={};   //the debug symbol all over
 
-if(console!=null) geohot=console;
-else geohot.debug=function(e){}
+if (typeof(console)!="undefined") geohot=console;
+else {
+  geohot.debug=function() {};
+}
 
 function include(fn) {
   document.write('<script type="text/javascript" src="'+fn+'"></scr'+'ipt>');

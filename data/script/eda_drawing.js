@@ -26,11 +26,11 @@ function drawline(x,y,w,h,c) {
   animatedctx=document.getElementById('line_canvas').getContext('2d');
   animatedctx.beginPath();
   //animatedctx.fillStyle=rgba(255,255,255,0);
-  if(c==0)
+  if(c=="red")
     animatedctx.fillStyle='rgba(255,0,0,128)';
-  else if(c==1)
+  else if(c=="green")
     animatedctx.fillStyle='rgba(0,128,0,128)';
-  else if(c==2)
+  else if(c=="blue")
     animatedctx.fillStyle='rgba(0,0,255,128)';
   if(w<0) {
     x=x+w;    //move x left
@@ -49,9 +49,10 @@ function drawline(x,y,w,h,c) {
   animatedctx.fill();
 }
 
-function drawlinearray(a,c) {    //a is {x,y}, c is the color
+function drawlinearray(a,c,da) {    //a is {x,y}, c is the color
   //this should draw an arrow too
-  drawarrow(a[0].x,a[0].y,c);
+  if(da)
+    drawarrow(a[0].x,a[0].y,c);
 
   for(var i=1;i<a.length;i++) {
     if(a[i].x==a[i-1].x)    //x is the same

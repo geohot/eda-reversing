@@ -21,15 +21,15 @@ int Commands::hexstrtoint(std::string in) {
 //returns xml list of all functions
 bool Commands::getFunctionList(COMMAND_PARAMS) {
   mBank->lock(LOCKED_SERVER);
-  response << XML_HEADER << "<top>" << std::endl;
+  response << XML_HEADER << "<top>";
 
   FunctionIterator walk = mBank->mem()->mFunctionStore.begin();
   while (walk != mBank->mem()->mFunctionStore.end()) {
     response << std::hex << "<function address=\"" << walk->first << "\">"
-        << mBank->mem()->getName(walk->first) << "</function>" << std::endl;
+        << mBank->mem()->getName(walk->first) << "</function>";
     ++walk;
   }
-  response << "</top>" << std::endl;
+  response << "</top>";
 }
 
 //get all instructions in function
@@ -45,18 +45,18 @@ bool Commands::getFunction(COMMAND_PARAMS) {
     Function *f = mBank->mem()->inFunction(addr);
     std::map<Data, Instruction *>::iterator walk = f->mInstructions.begin();
     response << "<html><div class=\"codebox\" id=\"" << mBank->mem()->getName(
-        walk->first) << "\">" << std::endl;
+        walk->first) << "\">";
 
     //next line should really get name
     response << std::hex << "<div class=\"addr\">" << mBank->mem()->getName(
-        walk->first) << "</div>" << std::endl;
+        walk->first) << "</div>";
 
     while (walk != f->mInstructions.end()) {
       if (walk->second->mLandingPad == true) {
-        response << "</div>" << std::endl << "<div class=\"codebox\" id=\""
-            << mBank->mem()->getName(walk->first) << "\">" << std::endl;
+        response << "</div><div class=\"codebox\" id=\""
+            << mBank->mem()->getName(walk->first) << "\">";
         response << std::hex << "<div class=\"addr\">" << mBank->mem()->getName(
-            walk->first) << "</div>" << std::endl;
+            walk->first) << "</div>";
       }
 
       response << walk->second->mString.webPrint(walk->first, mBank->mem());
@@ -76,11 +76,11 @@ bool Commands::getFunctionBranchData(COMMAND_PARAMS) {
 
   Data addr;
   if (mBank->mem()->lookupName(argv[2], &addr)) {
-    response << XML_HEADER << "<top>" << std::endl;
+    response << XML_HEADER << "<top>";
     Function *f = mBank->mem()->inFunction(addr);
     std::vector<Branch>::iterator walk = f->mBranchData.begin();
     while (walk != f->mBranchData.end()) {
-      response << (*walk).getXML() << std::endl;
+      response << (*walk).getXML();
       ++walk;
     }
     response << "</top>";
