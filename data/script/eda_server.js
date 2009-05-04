@@ -171,8 +171,10 @@ function getHexData() {
 
 //send a rename request to the server
 function sendRename(a,b) {
-  var req = new XMLHttpRequest();
-  req.open("GET", "Bank/rename/"+a+"/"+b, true); req.send("");
+  // will soon be...
+  // xx("RENAME", "Bank/location/"+a, b);
+  // and won't need this stupid wrapper function
+  xx("GET", "Bank/rename/"+a+"/"+b, "");
 }
 
 //pull the function instructions+branch tree down from the server
@@ -193,40 +195,16 @@ function refreshFunction(address) {
 
   selected=null;  //selections no longer valid, this is a real update
 
-  var req = new XMLHttpRequest(), reqBD = new XMLHttpRequest();
-  req.open("GET", "Bank/getFunction/"+address, true); req.send("");
+  var fxnbdata = xx("GET", "Bank/getFunctionBranchData/"+address, "").xml.documentElement.childNodes;
+  var bigdiv=document.createElement("div");
+  bigdiv.innerHTML=xx("GET", "Bank/getFunction/"+address, "").html;
+  graphDraw(fxnbdata, bigdiv.childNodes);
 
-  req.onreadystatechange = function(){
-  if (req.readyState == 4) {
-//*****Got Response*****
-
-//nested to allow drag everywhere
-  bigdiv=document.createElement("div");
-  bigdiv.innerHTML=req.responseText;
-  //alert(bigdiv.innerHTML);
-
-  //document.getElementById("mega").appendChild(field);
-
-//now request the branch data to draw the graph
-  reqBD.open("GET", "Bank/getFunctionBranchData/"+address, true); reqBD.send("");
-//******Cleanup******
-  }
-  }
-
-  reqBD.onreadystatechange = function(){
-  if (reqBD.readyState == 4) {
-//*****Got Response*****
-  graphDraw(reqBD.responseXML.documentElement.childNodes, bigdiv.childNodes);
-  
   onPage=document.getElementById(address);
   if(onPage!=null) {
     rx=(-onPage.offsetLeft)+500;
     ry=(-onPage.offsetTop)+100;
     updateScreen();
-  }
-  
-//******Cleanup******
-  }
   }
 
   oldhash="#"+address;
@@ -235,13 +213,7 @@ function refreshFunction(address) {
 
 // pull the function list from the server
 function refreshFunctionList() {
-  req = new XMLHttpRequest()
-  req.open("GET", "Bank/getFunctionList", true);
-  req.send("");
-  req.onreadystatechange = function(){
-  if (req.readyState == 4) {
-//*****Got Response*****
-  var m=req.responseXML.documentElement.childNodes;
+  var m=xx("GET", "Bank/getFunctionList", "").xml.documentElement.childNodes;
   var box=document.getElementById("functionlist");
   spit="";
   for(a=0;a<m.length;a++)
@@ -256,7 +228,4 @@ function refreshFunctionList() {
     }
   }
   box.innerHTML=spit;
-//******Cleanup******
-  }
-  }
 }

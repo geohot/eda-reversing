@@ -16,7 +16,7 @@ else {
 function include(fn) {
   document.write('<script type="text/javascript" src="'+fn+'"></scr'+'ipt>');
 }
-
+include("script/eda_lib.js");      //EDA library
 include("script/eda_events.js");   //EDA events, like renaming
 include("script/eda_server.js");   //communication with EDA server
 include("script/eda_graph.js");    //graph drawing algorithm
@@ -31,7 +31,7 @@ window.addEventListener('load', function(e) {
 }, false);
 
 function initFunctionViewer() {
-  geohot.debug("hello, I'm EDA");
+  //geohot.debug("hello, I'm EDA");
 
   initEvents();
   refreshFunctionList();
@@ -42,7 +42,7 @@ function initFunctionViewer() {
 }
 
 function initBankViewer() {
-  geohot.debug("hello, I'm EDA Bank Viewer");
+  //geohot.debug("hello, I'm EDA Bank Viewer");
   document.getElementById("address").onchange=getHexData;
   document.getElementById("clnum").onchange=getHexData;
   getHexData();
