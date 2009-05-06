@@ -20,7 +20,12 @@ void FrontEndRest::runLoop() {
     getline(cin, cmd);
     std::vector<string> words;
     Lexer::splitSpaces(cmd, &words);
-    cout << "got " << words.size() << " words" << endl;
+    if(words.size() >= 2) {
+      cout << "action: " << words[0] << endl;
+      std::vector<string> address;
+      Lexer::splitAddress(cmd, &address);
+      cout << "got " << address.size() << " part address" << endl;
+    }
   }
 }
 
