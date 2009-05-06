@@ -20,6 +20,7 @@
 #endif
 
 #define Data unsigned int
+#define Address unsigned int
 
 //define a debug print macro here
 

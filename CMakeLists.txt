@@ -23,7 +23,9 @@ SET(EDA_SRCS
 ./View/Commands.cc
 ./View/FrontEndServer.cc
 ./View/FrontEndConsole.cc
+./View/FrontEndRest.cc
 ./View/FrontEnd.cc
+./View/Lexer.cc
 ./Bank.cc
 ./Support/Mailbox.cc
 )

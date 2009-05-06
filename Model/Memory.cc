@@ -13,7 +13,7 @@
 
 using namespace eda;
 
-File& Memory::operator[](Data address) {
+File& Memory::operator[](Address address) {
   //info << "got access at " << address << ": ";
 
   std::map<int, std::vector<File> >::iterator addr;
@@ -32,7 +32,7 @@ File& Memory::operator[](Data address) {
   }
 }
 
-std::string Memory::getName(Data address) {
+std::string Memory::getName(Address address) {
   std::map<Data, std::string>::iterator walk;
   walk = mNames.find(address);
   if (walk != mNames.end())
@@ -44,11 +44,11 @@ std::string Memory::getName(Data address) {
   }
 }
 
-bool Memory::isNameSet(Data address) {
+bool Memory::isNameSet(Address address) {
   return (mNames.find(address) != mNames.end());
 }
 
-void Memory::setName(Data address, std::string name) {
+void Memory::setName(Address address, std::string name) {
   std::map<Data, std::string>::iterator nameiter = mNames.find(address);
   if (nameiter != mNames.end())
     mReverseNames.erase(nameiter->second);
@@ -57,7 +57,7 @@ void Memory::setName(Data address, std::string name) {
   mReverseNames.insert(std::make_pair(name, address));
 }
 
-bool Memory::lookupName(std::string name, Data *address) {
+bool Memory::lookupName(std::string name, Address *address) {
   std::map<std::string, Data>::iterator nameiter = mReverseNames.find(name);
   if (nameiter == mReverseNames.end())
     return false;
@@ -65,7 +65,7 @@ bool Memory::lookupName(std::string name, Data *address) {
   return true;
 }
 
-bool Memory::exists(Data address) {
+bool Memory::exists(Address address) {
   //info << "Checking existence of " << address << std::endl;
   std::map<int, std::vector<File> >::iterator addr;
   addr = mChunks.upper_bound(address);
@@ -80,7 +80,7 @@ bool Memory::exists(Data address) {
     return false;
 }
 
-std::vector<File>* Memory::getChunk(Data address) {
+std::vector<File>* Memory::getChunk(Address address) {
   std::map<int, std::vector<File> >::iterator addr;
   addr = mChunks.find(address);
   if (addr != mChunks.end())
@@ -91,7 +91,7 @@ std::vector<File>* Memory::getChunk(Data address) {
 
 //allocate a chunk of memory in mMemory
 //we really should migrate this space from undefined
-bool Memory::allocate(Data address, int len) {
+bool Memory::allocate(Address address, int len) {
   info << "allocating region " << address << "-" << len << std::endl;
   if (checkRegion(address, len))
     return false;
@@ -121,7 +121,7 @@ bool Memory::importIDC(const char *filename) {
 
 //load a file into memory
 //is it bad i only know how to do this in c?
-bool Memory::loadFile(const char *filename, Data address) {
+bool Memory::loadFile(const char *filename, Address address) {
   FILE *f = fopen(filename, "rb");
   if (f == 0) {
     debug << "file " << filename << " not found" << std::endl;
@@ -152,7 +152,7 @@ bool Memory::loadFile(const char *filename, Data address) {
 
 //see if a region is empty, ignore undefineds
 //false is no region found
-bool Memory::checkRegion(Data address, int len) {
+bool Memory::checkRegion(Address address, int len) {
   std::map<int, std::vector<File> >::iterator addr;
   //get first start segment before (address+len)
   addr = mChunks.upper_bound(address + len);
@@ -163,7 +163,7 @@ bool Memory::checkRegion(Data address, int len) {
   return (address < (addr->first + addr->second.size()));
 }
 
-void Memory::consoleDump(Data address, int len, int changelistNumber) {
+void Memory::consoleDump(Address address, int len, int changelistNumber) {
   for (int t = 0; t < len; t += 4) {
     if (!exists(address + t)) {
       std::cout << "Memory doesn't exist";
@@ -210,7 +210,7 @@ Function *Memory::addFunction(int start) {
   return &(mFunctionStore.insert(std::make_pair(start, Function(start))).first->second);
 }
 
-Function* Memory::inFunction(Data addr) {
+Function* Memory::inFunction(Address addr) {
   //return function with this instruction in it
   //doesn't work yet
   FunctionIterator a = mFunctionStore.find(addr);

@@ -4,6 +4,7 @@
 
 #include "FrontEndConsole.h"
 #include "FrontEndServer.h"
+#include "FrontEndRest.h"
 #include "Core.h"
 
 #include "Controller/ARM/CoreARM.h"     //gotta be
@@ -15,7 +16,8 @@ int main(int argc, char* argv[]) {
   Core* core = new CoreARM(bank); //arch is decided here for now
   //Server* server = new Server(bank);
   //FrontEnd* server = new FrontEnd(bank);
-  FrontEnd* server = new FrontEndServer(bank);
+  //FrontEnd* server = new FrontEndServer(bank);
+  FrontEnd* server = new FrontEndRest(bank);
   //FrontEnd* console = new FrontEndConsole(bank);
 
   //FrontEndConsole has the same interface as the server,

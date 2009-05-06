@@ -17,33 +17,33 @@
 
 namespace eda {
 
-#define FunctionIterator std::map<Data,Function>::iterator
+#define FunctionIterator std::map<Address,Function>::iterator
 
 class Memory {
 public:
   //default constructor
-  File& operator[](Data address);
-  bool allocate(Data, int);
+  File& operator[](Address address);
+  bool allocate(Address, int);
   void debugPrint();
-  bool loadFile(const char *, Data); //allocate the memory first
-  void consoleDump(Data address, int len, int);
-  bool exists(Data);
-  std::string getName(Data address);
-  bool isNameSet(Data address);
-  void setName(Data address, std::string name);
-  bool lookupName(std::string name, Data *address);
+  bool loadFile(const char *, Address); //allocate the memory first
+  void consoleDump(Address address, int len, int);
+  bool exists(Address);
+  std::string getName(Address address);
+  bool isNameSet(Address address);
+  void setName(Address address, std::string name);
+  bool lookupName(std::string name, Address *address);
   bool importIDC(const char *);
-  std::vector<File>* getChunk(Data);
-  Function* inFunction(Data addr);
+  std::vector<File>* getChunk(Address);
+  Function* inFunction(Address addr);
   Function* addFunction(int start);
-  std::map<Data, Function> mFunctionStore;
-  std::map<Data, std::string> mNames;
+  std::map<Address, Function> mFunctionStore;
+  std::map<Address, std::string> mNames;
 private:
   //allocated memory goes here, since memory is only on one interval, bsearch=interval tree
   std::map<int, std::vector<File> > mChunks;
   //memory that isn't specifically allocated ends up here
   std::map<Data, File> mMemoryUndefined;
-  std::map<std::string, Data> mReverseNames; //memory/speed tradeoff
+  std::map<std::string, Address> mReverseNames; //memory/speed tradeoff
   bool checkRegion(Data address, int len);
   static int fileSize(FILE *f);
 };
